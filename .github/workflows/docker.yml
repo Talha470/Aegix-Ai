@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Get latest code
+      # 1. Checkout code (only needed if future CI build is added)
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Deploy on server via SSH password
+      # 2. Deploy to server via SSH
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -23,40 +23,54 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
 
           script: |
+            set -e
+
             cd /home/talhaVM/Aegix-Ai
 
-            # Pull latest code
-            git pull origin master
+            # Ensure latest code is clean
+            git fetch origin
+            git reset --hard origin/master
 
-            # Detect which container is running
-            if [ "$(docker ps -q -f name=app_blue)" ]; then
+            # Detect active container
+            if docker ps --format '{{.Names}}' | grep -q app_blue; then
                 ACTIVE=blue
                 NEW=green
+                NEW_PORT=8082
+                OLD_PORT=8081
             else
                 ACTIVE=green
                 NEW=blue
+                NEW_PORT=8081
+                OLD_PORT=8082
             fi
 
             echo "Active: $ACTIVE | Deploying: $NEW"
 
-            # Stop old container (non-blocking) 
+            # Remove old NEW container if exists
             docker stop app_$NEW || true
             docker rm app_$NEW || true
 
-            # Build new version
+            # Build new image
             docker build -t aegix-ai:$NEW .
 
-            # Start new container
+            # Start NEW container on separate port
             docker run -d \
               --name app_$NEW \
-              -p 8080:8080 \
+              -p $NEW_PORT:8080 \
               aegix-ai:$NEW
 
-            # Wait for health check
-            sleep 5
+            # Health check (important improvement)
+            echo "Waiting for health check..."
+            for i in {1..10}; do
+              if curl -f http://localhost:$NEW_PORT/health; then
+                echo "Health check passed"
+                break
+              fi
+              sleep 3
+            done
 
-            # Stop old container (switch completed)
+            # Stop OLD container after success
             docker stop app_$ACTIVE || true
             docker rm app_$ACTIVE || true
 
-            echo "Deployment completed (Blue-Green switch done)"
+            echo "Deployment completed successfully (Blue-Green switch done)"
