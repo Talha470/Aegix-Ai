@@ -44,14 +44,16 @@ const selectPlanSchema = Joi.object({
       "Starter Plan",
       "Professional Plan",
       "Enterprise Plan",
-      "Live Demo"
+      "Live Demo",
+      "Annual Basic",
+      "Annual Essential",
+      "Annual Premium"
     )
     .required()
     .messages({
       "any.only": "Invalid selected plan",
     }),
 });
-
 module.exports = {
   signupSchema,
   loginSchema,
