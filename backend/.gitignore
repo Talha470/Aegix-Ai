@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.DS_Store
+dist
+coverage
+.env
+.idea
+.vscode
+*.log
+*.tsbuildinfo
+*.env
+*.local
+*.pem
+package-lock.json
+yarn.lock
