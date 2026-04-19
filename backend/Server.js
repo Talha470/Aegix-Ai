@@ -16,7 +16,7 @@ const app = express();
 
 // local testing ke liye trust proxy off rakho
 // production me nginx ke piche ho to 1 kar dena
-// app.set("trust proxy", 1);
+app.set("trust proxy", 1);
 
 connectDB();
 
