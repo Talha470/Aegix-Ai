@@ -57,8 +57,8 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authLimiter, detectAttack, require("./routes/auth"));
-// app.use("/api/dashboard", generalLimiter, detectAttack, require("./routes/dashboard"));
-// app.use("/api/users", generalLimiter, detectAttack, require("./routes/users"));
+app.use("/api/dashboard", generalLimiter, detectAttack, require("./routes/dashboard"));
+app.use("/api/users", generalLimiter, detectAttack, require("./routes/users"));
 
 app.use((req, res, next) => {
   next(new expressError(404, "Page not found!"));
