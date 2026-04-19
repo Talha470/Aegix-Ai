@@ -1,0 +1,62 @@
+name: Blue-Green Docker Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Get latest code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Deploy on server via SSH password
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+
+          script: |
+            cd /home/talhaVM/Aegix-Ai
+
+            # Pull latest code
+            git pull origin master
+
+            # Detect which container is running
+            if [ "$(docker ps -q -f name=app_blue)" ]; then
+                ACTIVE=blue
+                NEW=green
+            else
+                ACTIVE=green
+                NEW=blue
+            fi
+
+            echo "Active: $ACTIVE | Deploying: $NEW"
+
+            # Stop old container (non-blocking)
+            docker stop app_$NEW || true
+            docker rm app_$NEW || true
+
+            # Build new version
+            docker build -t aegix-ai:$NEW .
+
+            # Start new container
+            docker run -d \
+              --name app_$NEW \
+              -p 8000:8000 \
+              aegix-ai:$NEW
+
+            # Wait for health check
+            sleep 5
+
+            # Stop old container (switch completed)
+            docker stop app_$ACTIVE || true
+            docker rm app_$ACTIVE || true
+
+            echo "Deployment completed (Blue-Green switch done)"
