@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aegix AI | My Account</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-1: #0d0d0f;
+        --bg-2: #111116;
+        --bg-3: #0b1220;
+        --text: #e6eef8;
+        --muted: #9fb1c7;
+        --line: rgba(255, 255, 255, 0.12);
+        --card: rgba(255, 255, 255, 0.035);
+        --gradient-from: #00f0ff;
+        --gradient-to: #0066ff;
+        --transition: 0.35s ease;
+        --radius: 22px;
+        --success: #44d17a;
+        --danger: #ff6b6b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--text);
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top, rgba(0, 0, 0, 0.08), transparent 18%),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(0, 0, 0, 0.08),
+            transparent 18%
+          ),
+          var(--bg-1);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 16px;
+        position: sticky;
+        top: 14px;
+        z-index: 50;
+        width: min(1080px, calc(100% - 28px));
+        margin: 14px auto 0;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.045);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo img {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+
+      .brand-copy small {
+        display: block;
+        color: #91a7bf;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 10px;
+        margin-bottom: 4px;
+      }
+
+      .brand-copy strong {
+        font-size: 13px;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 11px 16px;
+        font-size: 13px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        color: white;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .account-page {
+        width: min(1120px, calc(100% - 40px));
+        margin: 40px auto 70px;
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 24px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.035);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        padding: 28px;
+      }
+
+      .hero-card {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 240, 255, 0.14),
+          transparent 70%
+        );
+        top: -70px;
+        left: -70px;
+        pointer-events: none;
+      }
+
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 102, 255, 0.14),
+          transparent 70%
+        );
+        bottom: -70px;
+        right: -70px;
+        pointer-events: none;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #bfefff;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .tag span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gradient-from);
+        box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 40px;
+        line-height: 1.15;
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-text {
+        color: var(--muted);
+        line-height: 1.85;
+        font-size: 15px;
+        position: relative;
+        z-index: 1;
+        max-width: 500px;
+      }
+
+      .mini-stats {
+        display: grid;
+        gap: 14px;
+        margin-top: 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .mini-stat {
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .mini-stat strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #eafcff;
+        font-size: 15px;
+      }
+
+      .mini-stat span {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .panel-title {
+        margin-bottom: 20px;
+      }
+
+      .panel-title h2 {
+        margin: 0 0 8px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 28px;
+        color: #fff;
+      }
+
+      .panel-title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .profile-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .profile-item {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 18px;
+        padding: 16px;
+      }
+
+      .profile-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #93aac3;
+        margin-bottom: 8px;
+      }
+
+      .profile-value {
+        font-size: 16px;
+        color: #edf7ff;
+        word-break: break-word;
+      }
+
+      .status-text {
+        margin-top: 16px;
+        min-height: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .status-text.success {
+        color: var(--success);
+      }
+
+      .status-text.error {
+        color: var(--danger);
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+      }
+
+      @media (max-width: 900px) {
+        .account-page {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 700px) {
+        header {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .header-actions {
+          justify-content: center;
+        }
+
+        h1 {
+          font-size: 31px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="theme.html" class="logo">
+        <img
+          src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png"
+          alt="Aegix AI logo"
+        />
+        <div class="brand-copy">
+          <small>Aegix AI</small>
+          <strong>Autonomous Cyber Defense</strong>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <a href="theme.html" class="btn btn-secondary">Back to Website</a>
+        <button id="logoutBtn" class="btn btn-primary">Logout</button>
+      </div>
+    </header>
+
+    <main class="account-page">
+      <section class="panel hero-card">
+        <div class="tag"><span></span> My Account</div>
+        <h1 id="welcomeHeading">Welcome to your account</h1>
+        <p class="hero-text">
+          Yeh aapka secure account page hai. Yahan aap apni signup aur login
+          details dekh sakte ho jo backend profile API se aa rahi hain.
+        </p>
+
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <strong>Secure access</strong>
+            <span
+              >JWT token ke through authenticated profile load ho rahi
+              hai.</span
+            >
+          </div>
+          <div class="mini-stat">
+            <strong>Live backend data</strong>
+            <span
+              >Yeh details localStorage ki jagah backend `/profile` endpoint se
+              verify hoti hain.</span
+            >
+          </div>
+          <div class="mini-stat">
+            <strong>Easy navigation</strong>
+            <span
+              >Aap website par wapas ja sakte ho ya logout kar sakte ho.</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <h2>Profile Details</h2>
+          <p>Your account information loaded from the server.</p>
+        </div>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <div class="profile-label">Full Name</div>
+            <div class="profile-value" id="accountName">Loading...</div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Email Address</div>
+            <div class="profile-value" id="accountEmail">Loading...</div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Phone Number</div>
+            <div class="profile-value" id="accountPhone">Loading...</div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Role</div>
+            <div class="profile-value" id="accountRole">Loading...</div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Selected Plan</div>
+            <div class="profile-value" id="accountSelectedPlan">Loading...</div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Plan Price</div>
+            <div class="profile-value" id="accountPlanPrice">Loading...</div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Plan Duration</div>
+            <div class="profile-value" id="accountPlanDuration">Loading...</div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Plan Valid Till</div>
+            <div class="profile-value" id="accountPlanValidTill">
+              Loading...
+            </div>
+          </div>
+
+          <div class="profile-item">
+            <div class="profile-label">Account Created</div>
+            <div class="profile-value" id="accountCreatedAt">Loading...</div>
+          </div>
+        </div>
+
+        <div class="status-text" id="accountStatus"></div>
+
+        <div class="actions" id="accountActions">
+          <a
+            href="upgrade-plan.html"
+            class="btn btn-primary"
+            id="upgradePlanBtn"
+            >Upgrade Plan</a
+          >
+          <a href="theme.html" class="btn btn-secondary">Back to Website</a>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const API_BASE = "http://localhost:8080/api/productpage";
+
+      function setStatus(message, type = "") {
+        const status = document.getElementById("accountStatus");
+        status.textContent = message;
+        status.className = "status-text";
+        if (type) status.classList.add(type);
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "Not available";
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return dateString;
+        return date.toLocaleString();
+      }
+
+      async function loadProfile() {
+        const token = localStorage.getItem("aegix_token");
+
+        if (!token) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        setStatus("Loading account details...");
+
+        try {
+          const res = await fetch(`${API_BASE}/profile`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            localStorage.removeItem("aegix_token");
+            localStorage.removeItem("aegix_user");
+            setStatus(
+              data.msg ||
+                data.message ||
+                "Session expired. Please login again.",
+              "error",
+            );
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 1000);
+            return;
+          }
+
+          localStorage.setItem("aegix_user", JSON.stringify(data));
+
+          document.getElementById("welcomeHeading").textContent =
+            `Welcome, ${data.name || "User"}`;
+          document.getElementById("accountName").textContent =
+            data.name || "Not available";
+          document.getElementById("accountEmail").textContent =
+            data.email || "Not available";
+          document.getElementById("accountPhone").textContent =
+            data.phone || "Not available";
+          document.getElementById("accountRole").textContent =
+            data.role || "user";
+          document.getElementById("accountSelectedPlan").textContent =
+            data.selectedPlan || "Not selected";
+          document.getElementById("accountPlanPrice").textContent =
+            data.selectedPlanPrice || "Not available";
+          document.getElementById("accountPlanDuration").textContent =
+            data.selectedPlanDuration || "Not available";
+          document.getElementById("accountPlanValidTill").textContent =
+            formatDate(data.planValidTill);
+          document.getElementById("accountCreatedAt").textContent = formatDate(
+            data.createdAt,
+          );
+
+          const upgradePlanBtn = document.getElementById("upgradePlanBtn");
+
+          if (!data.selectedPlan) {
+            upgradePlanBtn.textContent = "Choose Plan";
+          } else {
+            upgradePlanBtn.textContent = "Upgrade Plan";
+          }
+          setStatus("Account details loaded successfully.", "success");
+        } catch (err) {
+          setStatus("Unable to load account details right now.", "error");
+        }
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aegix_token");
+        localStorage.removeItem("aegix_user");
+        window.location.href = "login.html";
+      });
+
+      loadProfile();
+    </script>
+  </body>
+</html>

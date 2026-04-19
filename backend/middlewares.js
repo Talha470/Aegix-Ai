@@ -3,7 +3,14 @@ const Log = require("./models/logs");
 const Alert = require("./models/alerts");
 const SuspiciousIP = require("./models/suspiciousIPs");
 const RouteStats = require("./models/routeStats");
-const { signupSchema, loginSchema } = require("./utils/joiSchemas");
+const {
+  signupSchema,
+  loginSchema,
+  productSignupSchema,
+  productLoginSchema,
+  demoRequestSchema,
+  selectPlanSchema,
+} = require("./utils/joiSchemas");
 const {
   sqlPatterns,
   xssPatterns,
@@ -205,6 +212,54 @@ module.exports = {
     next();
   },
 
+  validateProductSignup: (req, res, next) => {
+    const { error } = productSignupSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        msg: error.details[0].message,
+      });
+    }
+
+    next();
+  },
+
+  validateProductLogin: (req, res, next) => {
+    const { error } = productLoginSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        msg: error.details[0].message,
+      });
+    }
+
+    next();
+  },
+
+  validateDemoRequest: (req, res, next) => {
+    const { error } = demoRequestSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        msg: error.details[0].message,
+      });
+    }
+
+    next();
+  },
+
+  validateSelectPlan: (req, res, next) => {
+  const { error } = selectPlanSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      msg: error.details[0].message,
+    });
+  }
+
+  next();
+},
+
   isAdmin: (req, res, next) => {
     if (req.user.role !== "admin") {
       return res.status(403).json({ msg: "Admin only" });
@@ -223,7 +278,6 @@ module.exports = {
       const ip = getClientIP(req);
       const userAgent = getUserAgent(req);
 
-      // temporary block check
       const blocked = await isBlockedIP(ip);
       if (blocked) {
         await Log.create({
@@ -272,7 +326,6 @@ module.exports = {
         return next();
       }
 
-      // repeated attacks in recent 10 min
       const recentWindow = getTimeWindowStart(10);
       const recentCount = await Log.countDocuments({
         ip,
@@ -287,9 +340,8 @@ module.exports = {
 
       let blockedUntil = null;
 
-      // temp block if critical
       if (severity === "CRITICAL") {
-        blockedUntil = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+        blockedUntil = new Date(Date.now() + 10 * 60 * 1000);
       }
 
       await Log.create({

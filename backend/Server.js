@@ -51,6 +51,15 @@ const authLimiter = rateLimit({
     msg: "Too many auth attempts, please try again later",
   },
 });
+const authLimiterforproductpage = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    msg: "Too many auth attempts, please try again later",
+  },
+});
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK" });
@@ -59,6 +68,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authLimiter, detectAttack, require("./routes/auth"));
 app.use("/api/dashboard", generalLimiter, detectAttack, require("./routes/dashboard"));
 app.use("/api/users", generalLimiter, detectAttack, require("./routes/users"));
+app.use("/api/productpage", authLimiterforproductpage, detectAttack, require("./routes/productpage"));
 
 app.use((req, res, next) => {
   next(new expressError(404, "Page not found!"));

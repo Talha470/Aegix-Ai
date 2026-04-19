@@ -1,0 +1,1257 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aegix AI | Login / Sign Up</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-1: #0d0d0f;
+        --bg-2: #111116;
+        --bg-3: #0b1220;
+        --text: #e6eef8;
+        --muted: #9fb1c7;
+        --line: rgba(255, 255, 255, 0.12);
+        --card: rgba(255, 255, 255, 0.035);
+        --gradient-from: #00f0ff;
+        --gradient-to: #0066ff;
+        --transition: 0.35s ease;
+        --shadow: 0 0 20px rgba(0, 255, 255, 0.18);
+        --max: 1240px;
+        --radius: 20px;
+        --danger: #ff6b6b;
+        --success: #44d17a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top, rgba(0, 0, 0, 0.08), transparent 18%),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(0, 0, 0, 0.08),
+            transparent 18%
+          ),
+          var(--bg-1);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      .container {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 16px;
+        position: sticky;
+        top: 14px;
+        z-index: 50;
+        width: min(1020px, calc(100% - 28px));
+        margin: 14px auto 0;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.045);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+        min-height: 76px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: fit-content;
+      }
+
+      .logo img {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+
+      .brand-copy small {
+        display: block;
+        color: #91a7bf;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 10px;
+        margin-bottom: 4px;
+      }
+
+      .brand-copy strong {
+        font-size: 13px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      nav a {
+        color: var(--text);
+        font-weight: 600;
+        padding: 7px 11px;
+        border-radius: 10px;
+        opacity: 0.78;
+        font-size: 13px;
+      }
+
+      nav a:hover {
+        opacity: 1;
+        background: rgba(0, 255, 255, 0.12);
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .auth-page {
+        min-height: calc(100vh - 110px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 20px 60px;
+      }
+
+      .auth-shell {
+        width: 100%;
+        max-width: 1120px;
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 26px;
+        align-items: stretch;
+      }
+
+      .auth-side,
+      .auth-panel {
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.035);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .auth-side {
+        padding: 42px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 640px;
+      }
+
+      .auth-side::before {
+        content: "";
+        position: absolute;
+        inset: -20% auto auto -10%;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 240, 255, 0.16),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .auth-side::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        bottom: -80px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 102, 255, 0.16),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .side-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #bfefff;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .side-tag span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gradient-from);
+        box-shadow: 0 0 14px rgba(0, 240, 255, 0.5);
+      }
+
+      .auth-side h1 {
+        margin: 0 0 18px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 46px;
+        line-height: 1.12;
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+        position: relative;
+        z-index: 1;
+      }
+
+      .auth-side p {
+        margin: 0 0 28px;
+        font-size: 16px;
+        line-height: 1.85;
+        color: var(--muted);
+        max-width: 520px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .feature-points {
+        display: grid;
+        gap: 14px;
+        position: relative;
+        z-index: 1;
+        margin-top: 6px;
+      }
+
+      .feature-point {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .feature-point .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gradient-from);
+        margin-top: 6px;
+        flex: 0 0 auto;
+        box-shadow: 0 0 12px rgba(0, 240, 255, 0.45);
+      }
+
+      .feature-point strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 15px;
+        color: #eafcff;
+      }
+
+      .feature-point span {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .auth-panel {
+        padding: 32px 30px;
+        min-height: 640px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .panel-top {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+
+      .tab-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+      }
+
+      .tab-btn {
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 12px 20px;
+        border-radius: 12px;
+        background: transparent;
+        color: var(--text);
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        opacity: 0.82;
+        transition: var(--transition);
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        color: #ffffff;
+        opacity: 1;
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.12);
+      }
+
+      .form-panel {
+        display: none;
+        animation: fadeInPanel 0.35s ease;
+      }
+
+      .form-panel.active {
+        display: block;
+      }
+
+      @keyframes fadeInPanel {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .panel-title {
+        text-align: center;
+        margin-bottom: 22px;
+      }
+
+      .panel-title h2 {
+        margin: 0 0 10px;
+        font-size: 30px;
+        font-family: "Orbitron", sans-serif;
+        color: #ffffff;
+      }
+
+      .panel-title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .input-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .input-group {
+        display: grid;
+        gap: 8px;
+      }
+
+      .input-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #d8e7f8;
+      }
+
+      .input-group input {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        padding: 15px 16px;
+        font-size: 14px;
+        outline: none;
+        transition: var(--transition);
+      }
+
+      .input-group input:focus {
+        border-color: rgba(0, 240, 255, 0.42);
+        box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.08);
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .input-group input::placeholder {
+        color: #8196ad;
+      }
+
+      .help-text {
+        font-size: 12px;
+        color: #8ea4bc;
+        margin-top: -2px;
+      }
+
+      .error-text {
+        min-height: 16px;
+        font-size: 12px;
+        color: var(--danger);
+      }
+
+      .success-text {
+        min-height: 16px;
+        font-size: 12px;
+        color: var(--success);
+        margin-top: 12px;
+        text-align: center;
+      }
+
+      .btn-auth {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: none;
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 8px;
+      }
+
+      .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.16);
+      }
+
+      .btn-auth:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .panel-footer {
+        text-align: center;
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .panel-footer a {
+        color: #00f0ff;
+        font-weight: 700;
+      }
+
+      .forgot-link {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 13px;
+        color: #b7dfff;
+      }
+
+      footer {
+        margin-top: 34px;
+        padding: 0;
+        color: #9ab0c8;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+      }
+
+      .footer-main {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+        padding: 38px 0 24px;
+        display: grid;
+        grid-template-columns: 1.25fr 0.9fr 0.9fr 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #dce8f6;
+        font-weight: 600;
+        margin-bottom: 14px;
+      }
+
+      .footer-brand img {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .footer-about {
+        color: #8ea4bc;
+        line-height: 1.8;
+        font-size: 14px;
+        max-width: 360px;
+      }
+
+      .footer-title {
+        margin: 0 0 14px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 15px;
+        color: #eaf6ff;
+        letter-spacing: 0.03em;
+      }
+
+      .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .footer-links a {
+        color: #8ea4bc;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .footer-links a:hover {
+        color: #ecf8ff;
+        transform: translateX(3px);
+      }
+
+      .footer-contact {
+        display: grid;
+        gap: 10px;
+        color: #8ea4bc;
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .footer-bottom {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+        padding: 16px 0 26px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: #8196ad;
+      }
+
+      .footer-mini-links {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .footer-mini-links a {
+        color: #8196ad;
+        font-size: 13px;
+      }
+
+      .footer-mini-links a:hover {
+        color: #ecf8ff;
+      }
+
+      @media (max-width: 1100px) {
+        .auth-shell {
+          grid-template-columns: 1fr;
+          max-width: 760px;
+        }
+      }
+
+      @media (max-width: 820px) {
+        header {
+          flex-wrap: wrap;
+          justify-content: center;
+          padding: 14px;
+        }
+
+        nav {
+          width: 100%;
+        }
+
+        .auth-page {
+          padding: 34px 16px 48px;
+        }
+
+        .auth-side,
+        .auth-panel {
+          min-height: auto;
+        }
+
+        .auth-side {
+          padding: 28px 22px;
+        }
+
+        .auth-side h1 {
+          font-size: 34px;
+        }
+
+        .footer-main {
+          grid-template-columns: 1fr;
+          gap: 24px;
+          text-align: center;
+        }
+
+        .footer-about {
+          margin: 0 auto;
+        }
+
+        .footer-brand {
+          justify-content: center;
+        }
+
+        .footer-bottom {
+          justify-content: center;
+          text-align: center;
+        }
+
+        .footer-mini-links {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="theme.html" class="logo">
+        <img
+          src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png"
+          alt="Aegix AI logo"
+        />
+        <div class="brand-copy">
+          <small>Aegix AI</small>
+          <strong>Autonomous Cyber Defense</strong>
+        </div>
+      </a>
+
+      <nav>
+        <a href="theme.html#home">Home</a>
+        <a href="theme.html#features">Features</a>
+        <a href="theme.html#security">Security</a>
+        <a href="theme.html#pricing">Pricing</a>
+        <a href="theme.html#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main class="auth-page">
+      <div class="auth-shell">
+        <section class="auth-side">
+          <div class="side-tag"><span></span> Secure Access</div>
+          <h1>Manage your cyber defense account with confidence</h1>
+          <p>
+            Access your Aegix AI workspace, create your security account, and
+            keep your business protected with a clean and enterprise-ready
+            experience.
+          </p>
+
+          <div class="feature-points">
+            <div class="feature-point">
+              <div class="dot"></div>
+              <div>
+                <strong>Protected onboarding</strong>
+                <span
+                  >Validated sign-up flow built for business users and serious
+                  security use cases.</span
+                >
+              </div>
+            </div>
+
+            <div class="feature-point">
+              <div class="dot"></div>
+              <div>
+                <strong>Business-first access</strong>
+                <span
+                  >Use your professional email and verified phone number to
+                  create your account properly.</span
+                >
+              </div>
+            </div>
+
+            <div class="feature-point">
+              <div class="dot"></div>
+              <div>
+                <strong>Fast authentication</strong>
+                <span
+                  >Switch between login and sign-up instantly without leaving
+                  the page.</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="auth-panel">
+          <div class="panel-top">
+            <div class="tab-switch">
+              <button class="tab-btn active" id="showLogin" type="button">
+                Login
+              </button>
+              <button class="tab-btn" id="showSignup" type="button">
+                Sign Up
+              </button>
+            </div>
+          </div>
+
+          <div class="form-panel active" id="loginPanel">
+            <div class="panel-title">
+              <h2>Welcome Back</h2>
+              <p>Login using your business email and password.</p>
+            </div>
+
+            <form id="loginForm" novalidate>
+              <div class="input-grid">
+                <div class="input-group">
+                  <label for="loginEmail">Business Email</label>
+                  <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="name@company.com"
+                  />
+                  <div class="error-text" id="loginEmailError"></div>
+                </div>
+
+                <div class="input-group">
+                  <label for="loginPassword">Password</label>
+                  <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Enter your password"
+                  />
+                  <div class="error-text" id="loginPasswordError"></div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-auth" id="loginSubmitBtn">
+                Login
+              </button>
+              <div class="panel-footer">
+                <a href="#" class="forgot-link">Forgot password?</a><br /><br />
+                Don’t have an account?
+                <a href="#" id="toSignupLink">Create one now</a>
+              </div>
+              <div class="success-text" id="loginSuccess"></div>
+            </form>
+          </div>
+
+          <div class="form-panel" id="signupPanel">
+            <div class="panel-title">
+              <h2>Create Account</h2>
+              <p>
+                Enter your verified details to create your Aegix AI account.
+              </p>
+            </div>
+
+            <form id="signupForm" novalidate>
+              <div class="input-grid">
+                <div class="input-group">
+                  <label for="signupName">Full Name</label>
+                  <input
+                    type="text"
+                    id="signupName"
+                    placeholder="Your full name"
+                  />
+                  <div class="error-text" id="signupNameError"></div>
+                </div>
+
+                <div class="input-group">
+                  <label for="signupEmail">Business Email</label>
+                  <input
+                    type="email"
+                    id="signupEmail"
+                    placeholder="name@company.com"
+                  />
+                  <div class="help-text">
+                    Personal domains like Gmail, Yahoo, Hotmail are not allowed.
+                  </div>
+                  <div class="error-text" id="signupEmailError"></div>
+                </div>
+
+                <div class="input-group">
+                  <label for="signupPhone">Pakistani Phone Number</label>
+                  <input
+                    type="tel"
+                    id="signupPhone"
+                    placeholder="+923001234567 or 03001234567"
+                  />
+                  <div class="error-text" id="signupPhoneError"></div>
+                </div>
+
+                <div class="input-group">
+                  <label for="signupPassword">Password</label>
+                  <input
+                    type="password"
+                    id="signupPassword"
+                    placeholder="Minimum 8 characters"
+                  />
+                  <div class="error-text" id="signupPasswordError"></div>
+                </div>
+
+                <div class="input-group">
+                  <label for="signupConfirmPassword">Confirm Password</label>
+                  <input
+                    type="password"
+                    id="signupConfirmPassword"
+                    placeholder="Re-enter your password"
+                  />
+                  <div class="error-text" id="signupConfirmPasswordError"></div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-auth" id="signupSubmitBtn">
+                Create Account
+              </button>
+              <div class="panel-footer">
+                Already have an account?
+                <a href="#" id="toLoginLink">Login here</a>
+              </div>
+              <div class="success-text" id="signupSuccess"></div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-main">
+        <div>
+          <div class="footer-brand">
+            <img
+              src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png"
+              alt="Aegix AI logo"
+            />
+            <span>Aegix AI</span>
+          </div>
+          <div class="footer-about">
+            We build intelligent cyber defense experiences focused on
+            visibility, threat detection, deception, and enterprise-ready
+            product presentation.
+          </div>
+        </div>
+
+        <div>
+          <h3 class="footer-title">About Us</h3>
+          <ul class="footer-links">
+            <li><a href="theme.html#home">Company Overview</a></li>
+            <li><a href="theme.html#advantage">Why Choose Us</a></li>
+            <li><a href="theme.html#security-visual">Security Visual</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-title">Services</h3>
+          <ul class="footer-links">
+            <li><a href="theme.html#features">Platform Features</a></li>
+            <li><a href="theme.html#security">Security Architecture</a></li>
+            <li><a href="theme.html#pricing">Pricing Plans</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-title">Contact</h3>
+          <div class="footer-contact">
+            <div><a href="theme.html#contact">Book a Demo</a></div>
+            <div><a href="theme.html#contact">Request Information</a></div>
+            <div><a href="theme.html#contact">Talk to Sales</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          © 2026 Aegix AI • Intelligent cyber defense for modern digital
+          environments.
+        </div>
+        <div class="footer-mini-links">
+          <a href="theme.html#home">Home</a>
+          <a href="theme.html#features">Features</a>
+          <a href="theme.html#security">Security</a>
+          <a href="theme.html#contact">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const API_BASE = "http://localhost:8080/api/productpage";
+
+      const showLogin = document.getElementById("showLogin");
+      const showSignup = document.getElementById("showSignup");
+      const loginPanel = document.getElementById("loginPanel");
+      const signupPanel = document.getElementById("signupPanel");
+      const toSignupLink = document.getElementById("toSignupLink");
+      const toLoginLink = document.getElementById("toLoginLink");
+
+      function switchPanel(panel) {
+        if (panel === "signup") {
+          signupPanel.classList.add("active");
+          loginPanel.classList.remove("active");
+          showSignup.classList.add("active");
+          showLogin.classList.remove("active");
+        } else {
+          loginPanel.classList.add("active");
+          signupPanel.classList.remove("active");
+          showLogin.classList.add("active");
+          showSignup.classList.remove("active");
+        }
+      }
+
+      showLogin.addEventListener("click", () => switchPanel("login"));
+      showSignup.addEventListener("click", () => switchPanel("signup"));
+      toSignupLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        switchPanel("signup");
+      });
+      toLoginLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        switchPanel("login");
+      });
+
+      function clearErrors(ids) {
+        ids.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = "";
+        });
+      }
+
+      function setText(id, message) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = message;
+      }
+
+      function isBusinessEmail(email) {
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+        const blockedDomains = [
+          "gmail.com",
+          "yahoo.com",
+          "hotmail.com",
+          "outlook.com",
+          "live.com",
+          "aol.com",
+          "icloud.com",
+          "proton.me",
+          "protonmail.com",
+        ];
+        if (!emailPattern.test(email)) return false;
+        const domain = email.split("@")[1].toLowerCase();
+        return !blockedDomains.includes(domain);
+      }
+
+      function isValidPakPhone(phone) {
+        const cleaned = phone.replace(/\s+/g, "");
+        return /^(\+92\d{10}|03\d{9})$/.test(cleaned);
+      }
+
+      function normalizePakPhone(phone) {
+        const cleaned = phone.replace(/\s+/g, "");
+        if (/^03\d{9}$/.test(cleaned)) {
+          return "+92" + cleaned.substring(1);
+        }
+        return cleaned;
+      }
+
+      function validatePassword(password) {
+        if (password.length < 8)
+          return "Password must be at least 8 characters.";
+        if (
+          !/[A-Z]/.test(password) ||
+          !/[a-z]/.test(password) ||
+          !/[0-9]/.test(password)
+        ) {
+          return "Password must include uppercase, lowercase, and a number.";
+        }
+        return "";
+      }
+
+      async function redirectIfAlreadyLoggedIn() {
+        const token = localStorage.getItem("aegix_token");
+        if (!token) return;
+
+        try {
+          const res = await fetch(`${API_BASE}/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (res.ok) {
+            const user = await res.json();
+            localStorage.setItem("aegix_user", JSON.stringify(user));
+            window.location.href = "account.html";
+          } else {
+            localStorage.removeItem("aegix_token");
+            localStorage.removeItem("aegix_user");
+          }
+        } catch (err) {}
+      }
+
+      async function saveSelectedPlanAfterAuth(token) {
+  const selectedPlan = localStorage.getItem("aegix_selected_plan");
+  if (!selectedPlan || !token) return;
+
+  try {
+    await fetch(`${API_BASE}/select-plan`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        interest: selectedPlan
+      })
+    });
+
+    localStorage.removeItem("aegix_selected_plan");
+  } catch (err) {
+    console.error("Failed to save selected plan after auth");
+  }
+}
+
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          clearErrors([
+            "signupNameError",
+            "signupEmailError",
+            "signupPhoneError",
+            "signupPasswordError",
+            "signupConfirmPasswordError",
+          ]);
+          setText("signupSuccess", "");
+
+          const submitBtn = document.getElementById("signupSubmitBtn");
+          const name = document.getElementById("signupName").value.trim();
+          const email = document
+            .getElementById("signupEmail")
+            .value.trim()
+            .toLowerCase();
+          const phone = document.getElementById("signupPhone").value.trim();
+          const password = document.getElementById("signupPassword").value;
+          const confirmPassword = document.getElementById(
+            "signupConfirmPassword",
+          ).value;
+
+          let valid = true;
+
+          if (!/^[A-Za-z ]{3,50}$/.test(name)) {
+            setText(
+              "signupNameError",
+              "Enter a valid full name using letters only.",
+            );
+            valid = false;
+          }
+
+          if (!isBusinessEmail(email)) {
+            setText(
+              "signupEmailError",
+              "Enter a valid business email address.",
+            );
+            valid = false;
+          }
+
+          if (!isValidPakPhone(phone)) {
+            setText(
+              "signupPhoneError",
+              "Enter a valid Pakistani phone number.",
+            );
+            valid = false;
+          }
+
+          const passwordError = validatePassword(password);
+          if (passwordError) {
+            setText("signupPasswordError", passwordError);
+            valid = false;
+          }
+
+          if (password !== confirmPassword) {
+            setText("signupConfirmPasswordError", "Passwords do not match.");
+            valid = false;
+          }
+
+          if (!valid) return;
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Creating account...";
+
+          try {
+            const res = await fetch(`${API_BASE}/signup`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name,
+                email,
+                phone: normalizePakPhone(phone),
+                password,
+              }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              const msg = data.msg || data.message || "Signup failed.";
+              if (msg.toLowerCase().includes("email")) {
+                setText("signupEmailError", msg);
+              } else if (msg.toLowerCase().includes("phone")) {
+                setText("signupPhoneError", msg);
+              } else if (msg.toLowerCase().includes("password")) {
+                setText("signupPasswordError", msg);
+              } else {
+                setText("signupSuccess", msg);
+              }
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Create Account";
+              return;
+            }
+
+            if (data.token) {
+              localStorage.setItem("aegix_token", data.token);
+                await saveSelectedPlanAfterAuth(data.token);
+            }
+
+            if (data.user) {
+              localStorage.setItem("aegix_user", JSON.stringify(data.user));
+            }
+
+            setText(
+              "signupSuccess",
+              "Account created successfully. Redirecting...",
+            );
+            document.getElementById("signupForm").reset();
+
+            setTimeout(() => {
+              window.location.href = "account.html";
+            }, 800);
+          } catch (err) {
+            setText("signupSuccess", "Server error. Please try again.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Create Account";
+          }
+        });
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          clearErrors(["loginEmailError", "loginPasswordError"]);
+          setText("loginSuccess", "");
+
+          const submitBtn = document.getElementById("loginSubmitBtn");
+          const email = document
+            .getElementById("loginEmail")
+            .value.trim()
+            .toLowerCase();
+          const password = document.getElementById("loginPassword").value;
+
+          let valid = true;
+
+          if (!email) {
+            setText("loginEmailError", "Email is required.");
+            valid = false;
+          }
+
+          if (!password) {
+            setText("loginPasswordError", "Password is required.");
+            valid = false;
+          }
+
+          if (!valid) return;
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Logging in...";
+
+          try {
+            const res = await fetch(`${API_BASE}/login`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email,
+                password,
+              }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              const msg =
+                data.msg || data.message || "Invalid email or password.";
+              setText("loginPasswordError", msg);
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Login";
+              return;
+            }
+
+            if (data.token) {
+              localStorage.setItem("aegix_token", data.token);
+                await saveSelectedPlanAfterAuth(data.token);
+            }
+
+            if (data.user) {
+              localStorage.setItem("aegix_user", JSON.stringify(data.user));
+            }
+
+            setText("loginSuccess", "Login successful. Redirecting...");
+            setTimeout(() => {
+              window.location.href = "account.html";
+            }, 700);
+          } catch (err) {
+            setText("loginPasswordError", "Server error. Please try again.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Login";
+          }
+        });
+
+      redirectIfAlreadyLoggedIn();
+    </script>
+  </body>
+</html>
