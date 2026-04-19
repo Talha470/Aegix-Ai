@@ -1,4 +1,4 @@
-name: Blue-Green Docker Deploy
+name: Docker Compose Deploy
 
 on:
   push:
@@ -10,12 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code (only needed if future CI build is added)
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # 2. Deploy to server via SSH
-      - name: Deploy to Server
+      # 1. Connect to server and deploy
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -27,50 +23,14 @@ jobs:
 
             cd /home/talhaVM/Aegix-Ai
 
-            # Ensure latest code is clean
+            # Get latest code from git
             git fetch origin
             git reset --hard origin/master
 
-            # Detect active container
-            if docker ps --format '{{.Names}}' | grep -q app_blue; then
-                ACTIVE=blue
-                NEW=green
-                NEW_PORT=8082
-                OLD_PORT=8081
-            else
-                ACTIVE=green
-                NEW=blue
-                NEW_PORT=8081
-                OLD_PORT=8082
-            fi
+            # Stop running containers
+            docker compose down || true
 
-            echo "Active: $ACTIVE | Deploying: $NEW"
+            # Build + run using docker-compose
+            docker compose up -d --build
 
-            # Remove old NEW container if exists
-            docker stop app_$NEW || true
-            docker rm app_$NEW || true
-
-            # Build new image
-            docker build -t aegix-ai:$NEW .
-
-            # Start NEW container on separate port
-            docker run -d \
-              --name app_$NEW \
-              -p $NEW_PORT:8080 \
-              aegix-ai:$NEW
-
-            # Health check (important improvement)
-            echo "Waiting for health check..."
-            for i in {1..10}; do
-              if curl -f http://localhost:$NEW_PORT/health; then
-                echo "Health check passed"
-                break
-              fi
-              sleep 3
-            done
-
-            # Stop OLD container after success
-            docker stop app_$ACTIVE || true
-            docker rm app_$ACTIVE || true
-
-            echo "Deployment completed successfully (Blue-Green switch done)"
+            echo "Deployment completed successfully"
