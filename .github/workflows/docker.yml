@@ -39,7 +39,7 @@ jobs:
 
             echo "Active: $ACTIVE | Deploying: $NEW"
 
-            # Stop old container (non-blocking)
+            # Stop old container (non-blocking) 
             docker stop app_$NEW || true
             docker rm app_$NEW || true
 
@@ -49,7 +49,7 @@ jobs:
             # Start new container
             docker run -d \
               --name app_$NEW \
-              -p 8000:8000 \
+              -p 8080:8080 \
               aegix-ai:$NEW
 
             # Wait for health check
