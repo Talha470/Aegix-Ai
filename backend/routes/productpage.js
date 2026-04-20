@@ -6,6 +6,8 @@ const {
   validateProductLogin,
   validateDemoRequest,
   validateSelectPlan,
+  validateNewPassword,
+  detectAttack,
 } = require("../middlewares");
 
 router.post("/signup", validateProductSignup, productpage.signup);
@@ -15,5 +17,8 @@ router.post("/request-demo", validateDemoRequest, productpage.requestDemo);
 router.post("/select-plan", isLoggedIn, validateSelectPlan, productpage.selectPlan);
 router.delete("/delete-all-users", productpage.deleteAllUsers);
 router.delete("/delete-all-demos", productpage.deleteAllDemoRequests);
+
+router.post("/forgot-password", detectAttack, productpage.forgotPassword);
+router.post("/reset-password", detectAttack, validateNewPassword, productpage.resetPassword);
 
 module.exports = router;

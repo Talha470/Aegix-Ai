@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const ProductPageUser = require("../models/productPageUsers");
 const DemoRequest = require("../models/demoRequests");
 const sendMail = require("../utils/sendMail");
+const crypto = require('crypto');
+
 
 const getPlanMeta = (selectedPlan = "") => {
   switch (selectedPlan) {
@@ -321,6 +323,94 @@ module.exports.selectPlan = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+
+
+
+module.exports.forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await ProductPageUser.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ msg: "Email not registered" });
+        }
+
+        // Generate a 6-digit OTP and store it as a string for consistent comparison
+        const otp = crypto.randomInt(100000, 999999).toString();
+
+        // Save OTP & expiry in DB
+        user.resetOtp = otp;
+        user.resetOtpExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+        await user.save();
+
+        // Send OTP via email (plain OTP only, no JWT token link needed)
+        await sendMail({
+            to: email,
+            subject: "Aegix AI Password Reset OTP",
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                  <h2>Hello ${user.name},</h2>
+                  <p>Your OTP for resetting your Aegix AI password is:</p>
+                  <p style="font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #0066ff;">${otp}</p>
+                  <p>This OTP is valid for <strong>15 minutes</strong> only.</p>
+                  <p>If you did not request this, please ignore this email.</p>
+                  <p>Regards,<br />Aegix AI Team</p>
+                </div>
+            `,
+        });
+
+        res.status(200).json({ msg: "OTP sent to your email" });
+    } catch (err) {
+        next(err);
+    }
+};
+
+module.exports.resetPassword = async (req, res, next) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ msg: "Email, OTP, and new password are required" });
+        }
+
+        const user = await ProductPageUser.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ msg: "User not found" });
+        }
+
+        // Check if OTP exists
+        if (!user.resetOtp) {
+            return res.status(400).json({ msg: "No OTP was requested for this account" });
+        }
+
+        // Check OTP expiry first
+        if (Date.now() > user.resetOtpExpiry) {
+            // Clear expired OTP
+            user.resetOtp = undefined;
+            user.resetOtpExpiry = undefined;
+            await user.save();
+            return res.status(400).json({ msg: "OTP has expired. Please request a new one." });
+        }
+
+        // Compare OTP as strings to avoid type mismatch
+        if (String(user.resetOtp) !== String(otp)) {
+            return res.status(400).json({ msg: "Invalid OTP. Please check and try again." });
+        }
+
+        // Hash the new password
+        const hash = await bcrypt.hash(newPassword, 10);
+        user.password = hash;
+        user.resetOtp = undefined;
+        user.resetOtpExpiry = undefined;
+        await user.save();
+
+        res.status(200).json({ msg: "Password reset successfully" });
+    } catch (err) {
+        next(err);
+    }
 };
 
 module.exports.requestDemo = async (req, res, next) => {

@@ -170,6 +170,33 @@ const isBlockedIP = async (ip) => {
 // -------------------- EXPORTS --------------------
 
 module.exports = {
+
+  validateOTP: (req, res, next) => {
+  const { otp } = req.body;
+
+  if (!otp || otp.length !== 6 || isNaN(otp)) {
+    return res.status(400).json({ msg: "Invalid OTP. Please enter a 6-digit OTP." });
+  }
+
+  next();
+},
+
+validateNewPassword:  (req, res, next) => {
+  const { newPassword } = req.body;
+
+  if (newPassword.length < 8) {
+    return res.status(400).json({ msg: "Password must be at least 8 characters." });
+  }
+  
+  if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+    return res.status(400).json({
+      msg: "Password must include uppercase, lowercase, and a number.",
+    });
+  }
+
+  next();
+},
+
   isLoggedIn: (req, res, next) => {
     const auth = req.headers.authorization;
 

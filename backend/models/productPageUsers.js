@@ -60,7 +60,17 @@ const productPageUserSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    
+
+    // Add these two fields to store OTP and its expiry
+    resetOtp: {
+      type: String,
+      required: false, // Not mandatory unless needed
+    },
+
+    resetOtpExpiry: {
+      type: Date,
+      required: false, // Not mandatory unless needed
+    },
   },
   { timestamps: true }
 );
