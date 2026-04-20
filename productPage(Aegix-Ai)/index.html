@@ -1,1835 +1,2301 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aegix AI - AI Intrusion Detection</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg-1:#0D0D0F;
-      --bg-2:#111116;
-      --bg-3:#0b1220;
-      --text:#e6eef8;
-      --muted:#9fb1c7;
-      --line:rgba(255,255,255,0.12);
-      --card:rgba(255,255,255,0.022);
-      --card-strong:rgba(255,255,255,0.045);
-      --gradient-from:#00f0ff;
-      --gradient-to:#0066ff;
-      --transition:0.7s cubic-bezier(0.22, 1, 0.36, 1);
-      --shadow:0 0 20px rgba(0,255,255,0.18);
-      --max:1240px;
-      --radius:20px;
-      --danger:#ff6b6b;
-      --success:#44d17a;
-    }
-
-    *{ box-sizing:border-box; }
-    html{ scroll-behavior:smooth; }
-    body{
-      margin:0;
-      font-family:'Inter',system-ui,sans-serif;
-      color:var(--text);
-      overflow-x:hidden;
-      background:
-        radial-gradient(circle at top, rgba(0, 0, 0, 0.08), transparent 18%),
-        radial-gradient(circle at 80% 0%, rgba(0, 0, 0, 0.08), transparent 18%),
-        var(--bg-1);
-    }
-
-    a{ color:inherit; text-decoration:none; transition:var(--transition); }
-    img{ max-width:100%; display:block; }
-
-    .container{ width:min(var(--max), calc(100% - 40px)); margin:0 auto; }
-
-    @keyframes fadeSlideDown {
-      0% { opacity:0; transform: translateY(-25px); }
-      100% { opacity:1; transform: translateY(0); }
-    }
-
-    @keyframes fadeSlideUp {
-      0% { opacity:0; transform: translateY(40px); }
-      100% { opacity:1; transform: translateY(0); }
-    }
-
-    @keyframes floatPulse {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-      100% { transform: translateY(0); }
-    }
-
-    @keyframes glowPulse {
-      0% { text-shadow:0 0 10px rgba(0,255,255,0.3); }
-      50% { text-shadow:0 0 18px rgba(0,255,255,0.6); }
-      100% { text-shadow:0 0 10px rgba(0,255,255,0.3); }
-    }
-
-    @keyframes rotate360 {
-      0%{ transform:translate(-50%, -50%) rotate(0deg); }
-      100%{ transform:translate(-50%, -50%) rotate(360deg); }
-    }
-
-    @keyframes blinkCursor {
-      0%{ border-color:#00ffff; }
-      50%{ border-color:transparent; }
-      100%{ border-color:#00ffff; }
-    }
-
-    header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:8px 16px;
-      position:sticky;
-      top:14px;
-      z-index:40;
-      width:min(1120px, calc(100% - 28px));
-      margin:14px auto 0;
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.045);
-      backdrop-filter: blur(12px);
-      animation: fadeSlideDown 0.9s ease forwards;
-      box-shadow:0 8px 28px rgba(0,0,0,0.22);
-    }
-
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:fit-content;
-    }
-
-    .logo img{ width:44px; height:44px; border-radius:12px; object-fit:cover; }
-    .brand-copy small{
-      display:block;
-      color:#91a7bf;
-      letter-spacing:0.22em;
-      text-transform:uppercase;
-      font-size:10px;
-      margin-bottom:4px;
-    }
-    .brand-copy strong{ font-size:13px; }
-
-    nav{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    nav a{
-      color:var(--text);
-      text-decoration:none;
-      font-weight:600;
-      padding:7px 11px;
-      border-radius:10px;
-      opacity:0.78;
-      font-size:13px;
-      position:relative;
-    }
-
-    nav a:hover{
-      opacity:1;
-      background:rgba(0,255,255,0.12);
-      box-shadow:0 0 12px rgba(0,255,255,0.25);
-      transform: translateY(-2px);
-    }
-
-    .header-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    .btn-pricing, .btn-secondary, .btn-outline{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      border-radius:12px;
-      font-weight:700;
-      padding:10px 15px;
-      font-size:13px;
-      border:none;
-      cursor:pointer;
-    }
-
-    .btn-pricing{
-      background: linear-gradient(90deg,var(--gradient-from),var(--gradient-to));
-      color:white;
-      animation: floatPulse 4s infinite ease-in-out;
-      box-shadow:0 0 18px rgba(0,255,255,0.15);
-    }
-
-    .btn-secondary{
-      background:rgba(255,255,255,0.045);
-      border:1px solid var(--line);
-      color:var(--text);
-    }
-
-    .btn-outline{
-      border:1px solid rgba(0,240,255,0.28);
-      background:rgba(0,255,255,0.08);
-      color:#eaffff;
-    }
-
-    .user-pill{
-      display:none;
-      align-items:center;
-      gap:10px;
-      padding:10px 14px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,0.12);
-      background:rgba(255,255,255,0.04);
-      color:#dffbff;
-      font-size:13px;
-      font-weight:600;
-    }
-
-    .user-pill.show{
-      display:inline-flex;
-    }
-
-    .hero{
-      min-height:120vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      flex-direction:column;
-      text-align:center;
-      position:relative;
-      overflow:hidden;
-      margin-top:-70px;
-      padding:0 20px 60px;
-    }
-
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:auto 0 0 0;
-      height:220px;
-      background:linear-gradient(to bottom, rgba(13,13,15,0), rgba(13,13,15,1));
-      z-index:2;
-      pointer-events:none;
-    }
-
-    .rotating-image{
-      position:absolute;
-      width:min(1300px, 120vw);
-      height:min(1100px, 100vw);
-      top:50%; left:50%;
-      transform:translate(-50%, -50%);
-      animation: rotate360 110s linear infinite;
-      opacity:0.35;
-      z-index:0;
-      pointer-events:none;
-    }
-
-    .hero-content{
-      position:relative;
-      z-index:5;
-      margin-top:-40px;
-      opacity:0;
-      animation: fadeSlideUp 1.2s ease forwards;
-      animation-delay:0.4s;
-      max-width:980px;
-    }
-
-    .hero h1{
-      font-family:'Orbitron',sans-serif;
-      font-size:74px;
-      line-height:1.06;
-      background:linear-gradient(90deg,var(--gradient-from),var(--gradient-to));
-      -webkit-background-clip:text;
-      color:transparent;
-      margin:0 0 20px;
-      animation: glowPulse 5s infinite;
-    }
-
-    .hero-subtext{
-      max-width:760px;
-      margin:0 auto;
-      font-size:19px;
-      line-height:1.8;
-      color:var(--muted);
-    }
-
-    .info-row{
-      margin-top:38px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:18px;
-      position:relative;
-      z-index:5;
-      opacity:0;
-      animation: fadeSlideUp 1.3s ease forwards;
-      animation-delay:0.7s;
-      flex-wrap:wrap;
-    }
-
-    .glass-box{
-      font-size:31px;
-      font-weight:700;
-      font-family:'Orbitron',sans-serif;
-      animation: glowPulse 4s infinite;
-    }
-
-    .changing-text{
-      font-size:31px;
-      font-family:'Orbitron',sans-serif;
-      background:linear-gradient(90deg,var(--gradient-from),var(--gradient-to));
-      -webkit-background-clip:text;
-      color:transparent;
-      text-shadow:0 0 12px rgba(0,255,255,0.5);
-      border-right:3px solid #00ffff;
-      padding-right:6px;
-      white-space:nowrap;
-      animation: blinkCursor 0.7s infinite, glowPulse 4s infinite;
-    }
-
-    .hero-actions{
-      margin-top:34px;
-      display:flex;
-      justify-content:center;
-      gap:14px;
-      flex-wrap:wrap;
-    }
-
-    .metric-card, .card, .pricing-card, .contact-card, .feature-card, .security-card, .testimonial-card, .why-card {
-      background:var(--card);
-      border:1px solid var(--line);
-      backdrop-filter:blur(12px);
-      border-radius:var(--radius);
-      box-shadow:0 12px 40px rgba(0,0,0,0.18);
-    }
-
-    section{ padding:110px 0; position:relative; }
-
-    .section-head{ text-align:center; max-width:820px; margin:0 auto 56px; }
-    .section-tag{
-      font-size:14px;
-      opacity:0.78;
-      display:inline-flex;
-      justify-content:center;
-      align-items:center;
-      gap:8px;
-      margin-bottom:14px;
-    }
-    .section-tag span{
-      width:10px; height:10px;
-      background:var(--gradient-from);
-      border-radius:50%;
-      box-shadow:0 0 10px var(--gradient-from);
-    }
-
-    .section-head h2{
-      font-size:46px;
-      line-height:1.2;
-      margin:0;
-      font-family:'Orbitron',sans-serif;
-      background:linear-gradient(90deg,var(--gradient-from),var(--gradient-to));
-      -webkit-background-clip:text;
-      color:transparent;
-    }
-
-    .section-head p{
-      margin:18px auto 0;
-      color:var(--muted);
-      font-size:17px;
-      line-height:1.9;
-      max-width:760px;
-    }
-
-    .why-section{ padding-top:80px; }
-    .why-wrapper{
-      margin-top:80px;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      gap:50px;
-      position:relative;
-      flex-wrap:wrap;
-    }
-
-    .why-left,.why-right{
-      display:flex;
-      flex-direction:column;
-      gap:26px;
-      width:320px;
-    }
-
-    .why-center{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      position:relative;
-      min-height:340px;
-    }
-
-    .why-lock{
-      width:320px;
-      animation: floatPulse 4s infinite ease-in-out;
-      position:relative;
-      z-index:2;
-    }
-
-    .why-glow{
-      position:absolute;
-      width:320px;
-      height:320px;
-      border-radius:50%;
-      background: radial-gradient(circle, rgba(0,255,255,0.35), transparent);
-      filter: blur(35px);
-      z-index:1;
-    }
-
-    .why-card, .feature-card, .security-card, .testimonial-card, .pricing-card, .contact-card, .card{
-      padding:26px;
-      text-align:left;
-    }
-
-    .why-card:hover,
-    .feature-card:hover,
-    .security-card:hover,
-    .pricing-card:hover,
-    .testimonial-card:hover,
-    .card:hover{
-      transform:translateY(-6px);
-      box-shadow:0 0 20px rgba(0,255,255,0.22);
-      border-color:rgba(0,255,255,0.25);
-    }
-
-    .why-icon, .mini-icon{
-      width:46px;
-      height:46px;
-      border-radius:14px;
-      margin-bottom:16px;
-      background:rgba(0,255,255,0.08);
-      border:1px solid rgba(0,255,255,0.18);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:22px;
-      box-shadow:var(--shadow);
-    }
-
-    .why-card h3, .feature-card h3, .security-card h3, .pricing-card h3, .card h3{
-      margin:0 0 12px;
-      font-size:24px;
-    }
-
-    .why-card p, .feature-card p, .security-card p, .pricing-card p, .card p, .testimonial-card p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.8;
-      font-size:15px;
-    }
-
-    .grid-3{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:22px;
-    }
-
-    .feature-list, .plan-list, .security-list{
-      margin:18px 0 0;
-      padding:0;
-      list-style:none;
-      display:grid;
-      gap:12px;
-    }
-
-    .feature-list li, .plan-list li, .security-list li{
-      color:#d8e7f8;
-      font-size:14px;
-      line-height:1.6;
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-    }
-
-    .feature-list li::before,
-    .plan-list li::before,
-    .security-list li::before{
-      content:"✦";
-      color:#00f0ff;
-      flex:0 0 auto;
-      margin-top:1px;
-    }
-
-    .security-highlight{
-      display:grid;
-      grid-template-columns:1.05fr 0.95fr;
-      gap:22px;
-      align-items:stretch;
-    }
-
-    .pricing-card.featured{
-      background:linear-gradient(180deg, rgba(0,255,255,0.09), rgba(255,255,255,0.05));
-      border-color:rgba(0,255,255,0.28);
-      transform:scale(1.02);
-    }
-
-    .price{
-      font-family:'Orbitron',sans-serif;
-      font-size:42px;
-      margin:16px 0 8px;
-      color:#fff;
-    }
-
-    .price small{
-      font-size:14px;
-      color:var(--muted);
-      font-family:'Inter',sans-serif;
-    }
-
-    .plan-badge{
-      display:inline-block;
-      font-size:12px;
-      font-weight:700;
-      color:#d9ffff;
-      background:rgba(0,255,255,0.12);
-      border:1px solid rgba(0,255,255,0.2);
-      padding:8px 10px;
-      border-radius:999px;
-      margin-bottom:8px;
-    }
-
-    .pricing-toggle-wrap{
-      display:flex;
-      justify-content:center;
-      margin:-10px 0 34px;
-    }
-
-    .pricing-toggle{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,0.10);
-      background:rgba(255,255,255,0.03);
-      backdrop-filter:blur(10px);
-      box-shadow:0 10px 30px rgba(0,0,0,0.18);
-    }
-
-    .pricing-toggle-btn{
-      border:none;
-      outline:none;
-      cursor:pointer;
-      padding:12px 20px;
-      border-radius:12px;
-      background:transparent;
-      color:var(--text);
-      font-family:'Inter',system-ui,sans-serif;
-      font-size:14px;
-      font-weight:700;
-      opacity:0.82;
-      transition:var(--transition);
-    }
-
-    .pricing-toggle-btn.active{
-      background:linear-gradient(90deg,var(--gradient-from),var(--gradient-to));
-      color:#ffffff;
-      opacity:1;
-      box-shadow:0 0 18px rgba(0,255,255,0.12);
-    }
-
-    .pricing-panels{
-      position:relative;
-    }
-
-    .pricing-panel{
-      display:none;
-    }
-
-    .pricing-panel.active{
-      display:block;
-      animation:fadeSlideUp 0.55s ease forwards;
-    }
-
-    .cta-panel{
-      text-align:center;
-      padding:40px 28px;
-      background:linear-gradient(180deg, rgba(0,255,255,0.08), rgba(255,255,255,0.04));
-      border:1px solid rgba(0,255,255,0.14);
-      border-radius:26px;
-    }
-
-    .cta-panel h3{
-      margin:0 0 14px;
-      font-size:34px;
-      font-family:'Orbitron',sans-serif;
-    }
-
-    .cta-panel p{
-      color:var(--muted);
-      max-width:760px;
-      margin:0 auto 24px;
-      line-height:1.8;
-    }
-
-    .testimonial-meta{
-      margin-top:18px;
-      font-size:14px;
-      color:#dffbff;
-      font-weight:600;
-    }
-
-    .contact-wrap{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:24px;
-      align-items:stretch;
-    }
-
-    .contact-form{
-      display:grid;
-      gap:14px;
-      margin-top:20px;
-    }
-
-    .contact-form input,
-    .contact-form textarea,
-    .contact-form select{
-      width:100%;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,0.05);
-      color:var(--text);
-      padding:15px 16px;
-      font-size:14px;
-      outline:none;
-    }
-
-    .contact-form textarea{ min-height:140px; resize:vertical; }
-    .contact-form input::placeholder, .contact-form textarea::placeholder{ color:#8196ad; }
-
-    .form-status{
-      min-height:18px;
-      font-size:13px;
-      color:var(--muted);
-    }
-
-    .form-status.success{
-      color:var(--success);
-    }
-
-    .form-status.error{
-      color:var(--danger);
-    }
-
-    .security-marquee-section{
-      padding:34px 0 46px;
-      overflow:hidden;
-    }
-
-    .security-marquee{
-      width:100%;
-      overflow:hidden;
-      border-top:1px solid rgba(0,255,255,0.14);
-      border-bottom:1px solid rgba(0,255,255,0.14);
-      background:linear-gradient(90deg, rgba(0,220,255,0.18) 0%, rgba(134,63,255,0.30) 50%, rgba(0,220,255,0.18) 100%);
-      box-shadow:
-        0 0 30px rgba(0,255,255,0.10),
-        inset 0 0 25px rgba(255,255,255,0.04);
-    }
-
-    .security-marquee-track{
-      display:flex;
-      width:max-content;
-      animation: securityMarqueeMove 18s linear infinite;
-      will-change:transform;
-    }
-
-    .security-marquee-group{
-      display:flex;
-      align-items:center;
-      gap:110px;
-      padding:10px 55px;
-      flex-shrink:0;
-    }
-
-    .security-marquee-item{
-      display:flex;
-      align-items:center;
-      gap:20px;
-      flex-shrink:0;
-      color:#f5f8ff;
-      font-family:'Orbitron',sans-serif;
-      font-size:clamp(2px, 4.2vw, 24px);
-      font-weight:700;
-      letter-spacing:0.04em;
-      text-transform:uppercase;
-      white-space:nowrap;
-    }
-
-    .marquee-icon{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width:56px;
-      height:56px;
-      font-size:40px;
-      line-height:1;
-      filter:drop-shadow(0 0 10px rgba(255,255,255,0.18));
-    }
-
-    @keyframes securityMarqueeMove{
-      from{ transform:translateX(0); }
-      to{ transform:translateX(-50%); }
-    }
-
-    .image-scroll-section{
-      padding-top:30px;
-      padding-bottom:120px;
-    }
-
-    .image-scroll-wrap{
-      position:relative;
-      height:220vh;
-    }
-
-    .image-scroll-sticky{
-      position:sticky;
-      top:90px;
-      height:78vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .image-box{
-      position:relative;
-      width:min(1180px, 100%);
-      height:100%;
-      border-radius:28px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,0.12);
-      box-shadow:0 20px 60px rgba(0,0,0,0.35);
-      background:#09111d;
-    }
-
-    .image-box img{
-      position:absolute;
-      left:0;
-      top:0;
-      width:100%;
-      height:130%;
-      object-fit:cover;
-      object-position:center top;
-      transform:translateY(0);
-      will-change:transform;
-    }
-
-    .image-box::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(90deg, rgba(4,7,13,0.82) 0%, rgba(4,7,13,0.45) 38%, rgba(4,7,13,0.20) 100%),
-        linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.35) 100%);
-      pointer-events:none;
-      z-index:1;
-    }
-
-    .image-overlay{
-      position:absolute;
-      inset:0;
-      z-index:2;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:flex-start;
-      padding:70px;
-    }
-
-    .image-overlay h2{
-      margin:0 0 28px;
-      max-width:620px;
-      font-family:'Orbitron',sans-serif;
-      font-size:54px;
-      line-height:1.1;
-      color:#ffffff;
-      text-shadow:0 0 22px rgba(0,240,255,0.18);
-    }
-
-    .image-headings{
-      display:grid;
-      gap:16px;
-      max-width:520px;
-    }
-
-    .image-heading-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:12px;
-      padding:14px 18px;
-      border-radius:16px;
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.14);
-      backdrop-filter:blur(8px);
-      font-family:'Orbitron',sans-serif;
-      font-size:18px;
-      color:#eafcff;
-      box-shadow:0 0 18px rgba(0,255,255,0.08);
-    }
-
-    .image-heading-pill span{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:var(--gradient-from);
-      box-shadow:0 0 12px rgba(0,255,255,0.55);
-      flex:0 0 auto;
-    }
-
-    .reveal{
-      opacity: 0;
-      transform: translate3d(0, 60px, 0);
-      transition:
-        opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-      will-change: opacity, transform;
-    }
-
-    .reveal.show{
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-
-    .reveal-up{ transform: translate3d(0, 60px, 0); }
-    .reveal-left{ transform: translate3d(-60px, 0, 0); }
-    .reveal-right{ transform: translate3d(60px, 0, 0); }
-    .reveal-scale{ transform: translate3d(0, 40px, 0) scale(0.96); }
-
-    .reveal.delay-1{ transition-delay: 0.08s; }
-    .reveal.delay-2{ transition-delay: 0.16s; }
-    .reveal.delay-3{ transition-delay: 0.24s; }
-    .reveal.delay-4{ transition-delay: 0.32s; }
-    .reveal.delay-5{ transition-delay: 0.40s; }
-
-    @media (prefers-reduced-motion: reduce){
-      .reveal,
-      .reveal.show{
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aegix AI - AI Intrusion Detection</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #0d0d0f;
+        --bg-2: #111116;
+        --bg-3: #0b1220;
+        --text: #e6eef8;
+        --muted: #9fb1c7;
+        --line: rgba(255, 255, 255, 0.12);
+        --card: rgba(255, 255, 255, 0.022);
+        --card-strong: rgba(255, 255, 255, 0.045);
+        --gradient-from: #00f0ff;
+        --gradient-to: #0066ff;
+        --transition: 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        --shadow: 0 0 20px rgba(0, 255, 255, 0.18);
+        --max: 1240px;
+        --radius: 20px;
+        --danger: #ff6b6b;
+        --success: #44d17a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--text);
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at top, rgba(0, 0, 0, 0.08), transparent 18%),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(0, 0, 0, 0.08),
+            transparent 18%
+          ),
+          var(--bg-1);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        transition: var(--transition);
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      .container {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      @keyframes fadeSlideDown {
+        0% {
+          opacity: 0;
+          transform: translateY(-25px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeSlideUp {
+        0% {
+          opacity: 0;
+          transform: translateY(40px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes floatPulse {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes glowPulse {
+        0% {
+          text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        50% {
+          text-shadow: 0 0 18px rgba(0, 255, 255, 0.6);
+        }
+        100% {
+          text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+      }
+
+      @keyframes rotate360 {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      @keyframes blinkCursor {
+        0% {
+          border-color: #00ffff;
+        }
+        50% {
+          border-color: transparent;
+        }
+        100% {
+          border-color: #00ffff;
+        }
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 16px;
+        position: sticky;
+        top: 14px;
+        z-index: 40;
+        width: min(1120px, calc(100% - 28px));
+        margin: 14px auto 0;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.045);
+        backdrop-filter: blur(12px);
+        animation: fadeSlideDown 0.9s ease forwards;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: fit-content;
+      }
+
+      .logo img {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+      .brand-copy small {
+        display: block;
+        color: #91a7bf;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 10px;
+        margin-bottom: 4px;
+      }
+      .brand-copy strong {
+        font-size: 13px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        padding: 7px 11px;
+        border-radius: 10px;
+        opacity: 0.78;
+        font-size: 13px;
+        position: relative;
+      }
+
+      nav a:hover {
         opacity: 1;
-        transform: none;
-        transition: none;
+        background: rgba(0, 255, 255, 0.12);
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.25);
+        transform: translateY(-2px);
       }
-    }
 
-    footer{
-      margin-top:34px;
-      padding:0;
-      color:#9ab0c8;
-      border-top:1px solid rgba(255,255,255,0.08);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    }
-
-    .footer-main{
-      width:min(var(--max), calc(100% - 40px));
-      margin:0 auto;
-      padding:38px 0 24px;
-      display:grid;
-      grid-template-columns:1.25fr 0.9fr 0.9fr 1fr;
-      gap:28px;
-      align-items:start;
-    }
-
-    .footer-brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      color:#dce8f6;
-      font-weight:600;
-      margin-bottom:14px;
-    }
-
-    .footer-brand img{
-      width:38px;
-      height:38px;
-      border-radius:10px;
-      object-fit:cover;
-    }
-
-    .footer-about{
-      color:#8ea4bc;
-      line-height:1.8;
-      font-size:14px;
-      max-width:360px;
-    }
-
-    .footer-title{
-      margin:0 0 14px;
-      font-family:'Orbitron',sans-serif;
-      font-size:15px;
-      color:#eaf6ff;
-      letter-spacing:0.03em;
-    }
-
-    .footer-links{
-      list-style:none;
-      padding:0;
-      margin:0;
-      display:grid;
-      gap:10px;
-    }
-
-    .footer-links a{
-      color:#8ea4bc;
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .footer-links a:hover{
-      color:#ecf8ff;
-      transform:translateX(3px);
-    }
-
-    .footer-contact{
-      display:grid;
-      gap:10px;
-      color:#8ea4bc;
-      font-size:14px;
-      line-height:1.7;
-    }
-
-    .footer-bottom{
-      width:min(var(--max), calc(100% - 40px));
-      margin:0 auto;
-      padding:16px 0 26px;
-      border-top:1px solid rgba(255,255,255,0.06);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-      flex-wrap:wrap;
-      font-size:13px;
-      color:#8196ad;
-    }
-
-    .footer-mini-links{
-      display:flex;
-      gap:16px;
-      flex-wrap:wrap;
-    }
-
-    .footer-mini-links a{
-      color:#8196ad;
-      font-size:13px;
-    }
-
-    .footer-mini-links a:hover{
-      color:#ecf8ff;
-    }
-
-    @media (max-width:1100px){
-      .grid-3,.security-highlight,.contact-wrap{ grid-template-columns:1fr 1fr; }
-      .why-wrapper{ flex-direction:column; align-items:center; }
-      .why-left,.why-right{ width:100%; max-width:520px; }
-      .hero h1{ font-size:58px; }
-      .section-head h2{ font-size:38px; }
-      header{ width:calc(100% - 24px); }
-      .image-overlay{ padding:48px; }
-      .image-overlay h2{ font-size:42px; max-width:520px; }
-    }
-
-    @media (max-width:820px){
-      header{
-        flex-wrap:wrap;
-        justify-content:center;
-        padding:14px;
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
       }
-      nav{ width:100%; }
-      .header-actions{ justify-content:center; width:100%; }
-      .hero{
-        min-height:100vh;
-        margin-top:-20px;
+
+      .btn-pricing,
+      .btn-secondary,
+      .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 10px 15px;
+        font-size: 13px;
+        border: none;
+        cursor: pointer;
       }
-      .hero h1{ font-size:42px; }
-      .glass-box,.changing-text{ font-size:22px; }
-      .hero-subtext{ font-size:16px; }
-      .grid-3,.security-highlight,.contact-wrap{ grid-template-columns:1fr; }
-      .section-head h2{ font-size:32px; }
-      .rotating-image{ width:900px; height:900px; opacity:0.28; }
-      .why-lock{ width:250px; }
-      .why-glow{ width:240px; height:240px; }
-      .image-scroll-wrap{ height:145vh; }
-      .image-scroll-sticky{ top:74px; height:72vh; }
-      .image-overlay{ padding:26px; }
-      .image-overlay h2{ font-size:30px; max-width:100%; }
-      .image-heading-pill{ font-size:15px; padding:12px 14px; }
-      .footer-main{
-        grid-template-columns:1fr;
-        gap:24px;
-        text-align:center;
+
+      .btn-pricing {
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        color: white;
+        animation: floatPulse 4s infinite ease-in-out;
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.15);
       }
-      .footer-about{
-        margin:0 auto;
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid var(--line);
+        color: var(--text);
       }
-      .footer-brand{
-        justify-content:center;
+
+      .btn-outline {
+        border: 1px solid rgba(0, 240, 255, 0.28);
+        background: rgba(0, 255, 255, 0.08);
+        color: #eaffff;
       }
-      .footer-bottom{
-        justify-content:center;
-        text-align:center;
+
+      .user-pill {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: #dffbff;
+        font-size: 13px;
+        font-weight: 600;
       }
-      .footer-mini-links{
-        justify-content:center;
+
+      .user-pill.show {
+        display: inline-flex;
       }
-    }
-  </style>
-</head>
-<body>
 
-  <header>
-    <a href="#home" class="logo">
-      <img src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png" alt="Aegix AI logo">
-      <div class="brand-copy">
-        <small>Aegix AI</small>
-        <strong>Autonomous Cyber Defense</strong>
-      </div>
-    </a>
+      .hero {
+        min-height: 120vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin-top: -70px;
+        padding: 0 20px 60px;
+      }
 
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#features">Features</a>
-      <a href="#security">Security</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#contact">Contact</a>
-    </nav>
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0 0;
+        height: 220px;
+        background: linear-gradient(
+          to bottom,
+          rgba(13, 13, 15, 0),
+          rgba(13, 13, 15, 1)
+        );
+        z-index: 2;
+        pointer-events: none;
+      }
 
-    <div class="header-actions">
-      <a href="account.html" class="user-pill" id="userPill">
-  <span id="headerUserName">Logged in</span>
-</a>
-      <a class="btn-secondary" id="loginBtn" href="login.html">Login / Sign Up</a>
-      <button class="btn-outline" id="logoutBtn" style="display:none;">Logout</button>
-<a class="btn-pricing" id="getStartedBtn" href="#pricing">Get Started</a>    </div>
-  </header>
+      .rotating-image {
+        position: absolute;
+        width: min(1300px, 120vw);
+        height: min(1100px, 100vw);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: rotate360 110s linear infinite;
+        opacity: 0.35;
+        z-index: 0;
+        pointer-events: none;
+      }
 
-  <section class="hero" id="home">
-    <div class="rotating-image">
-      <img src="Asset-2.png" alt="Rotating cyber defense background" style="width:100%; height:100%; object-fit:contain;">
-    </div>
+      .hero-content {
+        position: relative;
+        z-index: 5;
+        margin-top: -40px;
+        opacity: 0;
+        animation: fadeSlideUp 1.2s ease forwards;
+        animation-delay: 0.4s;
+        max-width: 980px;
+      }
 
-    <div class="hero-content">
-      <h1>Aegix AI</h1>
-      <p class="hero-subtext">
-        Intelligent cybersecurity for modern businesses. Aegix AI helps you detect threats early,
-        monitor suspicious behavior in real time, and respond with speed before attacks turn into damage.
-      </p>
+      .hero h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 74px;
+        line-height: 1.06;
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+        margin: 0 0 20px;
+        animation: glowPulse 5s infinite;
+      }
 
-      <div class="info-row">
-        <div class="glass-box">We protect you from</div>
-        <div class="glass-box">
-          <span class="changing-text" id="rotateWord"></span>
+      .hero-subtext {
+        max-width: 760px;
+        margin: 0 auto;
+        font-size: 19px;
+        line-height: 1.8;
+        color: var(--muted);
+      }
+
+      .info-row {
+        margin-top: 38px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+        position: relative;
+        z-index: 5;
+        opacity: 0;
+        animation: fadeSlideUp 1.3s ease forwards;
+        animation-delay: 0.7s;
+        flex-wrap: wrap;
+      }
+
+      .glass-box {
+        font-size: 31px;
+        font-weight: 700;
+        font-family: "Orbitron", sans-serif;
+        animation: glowPulse 4s infinite;
+      }
+
+      .changing-text {
+        font-size: 31px;
+        font-family: "Orbitron", sans-serif;
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+        border-right: 3px solid #00ffff;
+        padding-right: 6px;
+        white-space: nowrap;
+        animation:
+          blinkCursor 0.7s infinite,
+          glowPulse 4s infinite;
+      }
+
+      .hero-actions {
+        margin-top: 34px;
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .metric-card,
+      .card,
+      .pricing-card,
+      .contact-card,
+      .feature-card,
+      .security-card,
+      .testimonial-card,
+      .why-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        backdrop-filter: blur(12px);
+        border-radius: var(--radius);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+      }
+
+      section {
+        padding: 110px 0;
+        position: relative;
+      }
+
+      .section-head {
+        text-align: center;
+        max-width: 820px;
+        margin: 0 auto 56px;
+      }
+      .section-tag {
+        font-size: 14px;
+        opacity: 0.78;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .section-tag span {
+        width: 10px;
+        height: 10px;
+        background: var(--gradient-from);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--gradient-from);
+      }
+
+      .section-head h2 {
+        font-size: 46px;
+        line-height: 1.2;
+        margin: 0;
+        font-family: "Orbitron", sans-serif;
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .section-head p {
+        margin: 18px auto 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.9;
+        max-width: 760px;
+      }
+
+      .why-section {
+        padding-top: 80px;
+      }
+      .why-wrapper {
+        margin-top: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 50px;
+        position: relative;
+        flex-wrap: wrap;
+      }
+
+      .why-left,
+      .why-right {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        width: 320px;
+      }
+
+      .why-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        min-height: 340px;
+      }
+
+      .why-lock {
+        width: 320px;
+        animation: floatPulse 4s infinite ease-in-out;
+        position: relative;
+        z-index: 2;
+      }
+
+      .why-glow {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 255, 255, 0.35),
+          transparent
+        );
+        filter: blur(35px);
+        z-index: 1;
+      }
+
+      .why-card,
+      .feature-card,
+      .security-card,
+      .testimonial-card,
+      .pricing-card,
+      .contact-card,
+      .card {
+        padding: 26px;
+        text-align: left;
+      }
+
+      .why-card:hover,
+      .feature-card:hover,
+      .security-card:hover,
+      .pricing-card:hover,
+      .testimonial-card:hover,
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.22);
+        border-color: rgba(0, 255, 255, 0.25);
+      }
+
+      .why-icon,
+      .mini-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        background: rgba(0, 255, 255, 0.08);
+        border: 1px solid rgba(0, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-shadow: var(--shadow);
+      }
+
+      .why-card h3,
+      .feature-card h3,
+      .security-card h3,
+      .pricing-card h3,
+      .card h3 {
+        margin: 0 0 12px;
+        font-size: 24px;
+      }
+
+      .why-card p,
+      .feature-card p,
+      .security-card p,
+      .pricing-card p,
+      .card p,
+      .testimonial-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.8;
+        font-size: 15px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+      }
+
+      .feature-list,
+      .plan-list,
+      .security-list {
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 12px;
+      }
+
+      .feature-list li,
+      .plan-list li,
+      .security-list li {
+        color: #d8e7f8;
+        font-size: 14px;
+        line-height: 1.6;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .feature-list li::before,
+      .plan-list li::before,
+      .security-list li::before {
+        content: "✦";
+        color: #00f0ff;
+        flex: 0 0 auto;
+        margin-top: 1px;
+      }
+
+      .security-highlight {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 22px;
+        align-items: stretch;
+      }
+
+      .pricing-card.featured {
+        background: linear-gradient(
+          180deg,
+          rgba(0, 255, 255, 0.09),
+          rgba(255, 255, 255, 0.05)
+        );
+        border-color: rgba(0, 255, 255, 0.28);
+        transform: scale(1.02);
+      }
+
+      .price {
+        font-family: "Orbitron", sans-serif;
+        font-size: 42px;
+        margin: 16px 0 8px;
+        color: #fff;
+      }
+
+      .price small {
+        font-size: 14px;
+        color: var(--muted);
+        font-family: "Inter", sans-serif;
+      }
+
+      .plan-badge {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #d9ffff;
+        background: rgba(0, 255, 255, 0.12);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        padding: 8px 10px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+      }
+
+      .pricing-toggle-wrap {
+        display: flex;
+        justify-content: center;
+        margin: -10px 0 34px;
+      }
+
+      .pricing-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      }
+
+      .pricing-toggle-btn {
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 12px 20px;
+        border-radius: 12px;
+        background: transparent;
+        color: var(--text);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        opacity: 0.82;
+        transition: var(--transition);
+      }
+
+      .pricing-toggle-btn.active {
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        color: #ffffff;
+        opacity: 1;
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.12);
+      }
+
+      .pricing-panels {
+        position: relative;
+      }
+
+      .pricing-panel {
+        display: none;
+      }
+
+      .pricing-panel.active {
+        display: block;
+        animation: fadeSlideUp 0.55s ease forwards;
+      }
+
+      .cta-panel {
+        text-align: center;
+        padding: 40px 28px;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.04)
+        );
+        border: 1px solid rgba(0, 255, 255, 0.14);
+        border-radius: 26px;
+      }
+
+      .cta-panel h3 {
+        margin: 0 0 14px;
+        font-size: 34px;
+        font-family: "Orbitron", sans-serif;
+      }
+
+      .cta-panel p {
+        color: var(--muted);
+        max-width: 760px;
+        margin: 0 auto 24px;
+        line-height: 1.8;
+      }
+
+      .testimonial-meta {
+        margin-top: 18px;
+        font-size: 14px;
+        color: #dffbff;
+        font-weight: 600;
+      }
+
+      .contact-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .contact-form {
+        display: grid;
+        gap: 14px;
+        margin-top: 20px;
+      }
+
+      .contact-form input,
+      .contact-form textarea,
+      .contact-form select {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        padding: 15px 16px;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .contact-form textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+      .contact-form input::placeholder,
+      .contact-form textarea::placeholder {
+        color: #8196ad;
+      }
+
+      .form-status {
+        min-height: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .form-status.success {
+        color: var(--success);
+      }
+
+      .form-status.error {
+        color: var(--danger);
+      }
+
+      .security-marquee-section {
+        padding: 34px 0 46px;
+        overflow: hidden;
+      }
+
+      .security-marquee {
+        width: 100%;
+        overflow: hidden;
+        border-top: 1px solid rgba(0, 255, 255, 0.14);
+        border-bottom: 1px solid rgba(0, 255, 255, 0.14);
+        background: linear-gradient(
+          90deg,
+          rgba(0, 220, 255, 0.18) 0%,
+          rgba(134, 63, 255, 0.3) 50%,
+          rgba(0, 220, 255, 0.18) 100%
+        );
+        box-shadow:
+          0 0 30px rgba(0, 255, 255, 0.1),
+          inset 0 0 25px rgba(255, 255, 255, 0.04);
+      }
+
+      .security-marquee-track {
+        display: flex;
+        width: max-content;
+        animation: securityMarqueeMove 18s linear infinite;
+        will-change: transform;
+      }
+
+      .security-marquee-group {
+        display: flex;
+        align-items: center;
+        gap: 110px;
+        padding: 10px 55px;
+        flex-shrink: 0;
+      }
+
+      .security-marquee-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-shrink: 0;
+        color: #f5f8ff;
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(2px, 4.2vw, 24px);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .marquee-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        font-size: 40px;
+        line-height: 1;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.18));
+      }
+
+      @keyframes securityMarqueeMove {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      .image-scroll-section {
+        padding-top: 30px;
+        padding-bottom: 120px;
+      }
+
+      .image-scroll-wrap {
+        position: relative;
+        height: 220vh;
+      }
+
+      .image-scroll-sticky {
+        position: sticky;
+        top: 90px;
+        height: 78vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image-box {
+        position: relative;
+        width: min(1180px, 100%);
+        height: 100%;
+        border-radius: 28px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        background: #09111d;
+      }
+
+      .image-box img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 130%;
+        object-fit: cover;
+        object-position: center top;
+        transform: translateY(0);
+        will-change: transform;
+      }
+
+      .image-box::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(4, 7, 13, 0.82) 0%,
+            rgba(4, 7, 13, 0.45) 38%,
+            rgba(4, 7, 13, 0.2) 100%
+          ),
+          linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.35) 100%
+          );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .image-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 70px;
+      }
+
+      .image-overlay h2 {
+        margin: 0 0 28px;
+        max-width: 620px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 54px;
+        line-height: 1.1;
+        color: #ffffff;
+        text-shadow: 0 0 22px rgba(0, 240, 255, 0.18);
+      }
+
+      .image-headings {
+        display: grid;
+        gap: 16px;
+        max-width: 520px;
+      }
+
+      .image-heading-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(8px);
+        font-family: "Orbitron", sans-serif;
+        font-size: 18px;
+        color: #eafcff;
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.08);
+      }
+
+      .image-heading-pill span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gradient-from);
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.55);
+        flex: 0 0 auto;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translate3d(0, 60px, 0);
+        transition:
+          opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: opacity, transform;
+      }
+
+      .reveal.show {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+
+      .reveal-up {
+        transform: translate3d(0, 60px, 0);
+      }
+      .reveal-left {
+        transform: translate3d(-60px, 0, 0);
+      }
+      .reveal-right {
+        transform: translate3d(60px, 0, 0);
+      }
+      .reveal-scale {
+        transform: translate3d(0, 40px, 0) scale(0.96);
+      }
+
+      .reveal.delay-1 {
+        transition-delay: 0.08s;
+      }
+      .reveal.delay-2 {
+        transition-delay: 0.16s;
+      }
+      .reveal.delay-3 {
+        transition-delay: 0.24s;
+      }
+      .reveal.delay-4 {
+        transition-delay: 0.32s;
+      }
+      .reveal.delay-5 {
+        transition-delay: 0.4s;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal,
+        .reveal.show {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+
+      footer {
+        margin-top: 34px;
+        padding: 0;
+        color: #9ab0c8;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+      }
+
+      .footer-main {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+        padding: 38px 0 24px;
+        display: grid;
+        grid-template-columns: 1.25fr 0.9fr 0.9fr 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #dce8f6;
+        font-weight: 600;
+        margin-bottom: 14px;
+      }
+
+      .footer-brand img {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .footer-about {
+        color: #8ea4bc;
+        line-height: 1.8;
+        font-size: 14px;
+        max-width: 360px;
+      }
+
+      .footer-title {
+        margin: 0 0 14px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 15px;
+        color: #eaf6ff;
+        letter-spacing: 0.03em;
+      }
+
+      .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .footer-links a {
+        color: #8ea4bc;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .footer-links a:hover {
+        color: #ecf8ff;
+        transform: translateX(3px);
+      }
+
+      .footer-contact {
+        display: grid;
+        gap: 10px;
+        color: #8ea4bc;
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .footer-bottom {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+        padding: 16px 0 26px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: #8196ad;
+      }
+
+      .footer-mini-links {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .footer-mini-links a {
+        color: #8196ad;
+        font-size: 13px;
+      }
+
+      .footer-mini-links a:hover {
+        color: #ecf8ff;
+      }
+
+      @media (max-width: 1100px) {
+        .grid-3,
+        .security-highlight,
+        .contact-wrap {
+          grid-template-columns: 1fr 1fr;
+        }
+        .why-wrapper {
+          flex-direction: column;
+          align-items: center;
+        }
+        .why-left,
+        .why-right {
+          width: 100%;
+          max-width: 520px;
+        }
+        .hero h1 {
+          font-size: 58px;
+        }
+        .section-head h2 {
+          font-size: 38px;
+        }
+        header {
+          width: calc(100% - 24px);
+        }
+        .image-overlay {
+          padding: 48px;
+        }
+        .image-overlay h2 {
+          font-size: 42px;
+          max-width: 520px;
+        }
+      }
+
+      @media (max-width: 820px) {
+        header {
+          flex-wrap: wrap;
+          justify-content: center;
+          padding: 14px;
+        }
+        nav {
+          width: 100%;
+        }
+        .header-actions {
+          justify-content: center;
+          width: 100%;
+        }
+        .hero {
+          min-height: 100vh;
+          margin-top: -20px;
+        }
+        .hero h1 {
+          font-size: 42px;
+        }
+        .glass-box,
+        .changing-text {
+          font-size: 22px;
+        }
+        .hero-subtext {
+          font-size: 16px;
+        }
+        .grid-3,
+        .security-highlight,
+        .contact-wrap {
+          grid-template-columns: 1fr;
+        }
+        .section-head h2 {
+          font-size: 32px;
+        }
+        .rotating-image {
+          width: 900px;
+          height: 900px;
+          opacity: 0.28;
+        }
+        .why-lock {
+          width: 250px;
+        }
+        .why-glow {
+          width: 240px;
+          height: 240px;
+        }
+        .image-scroll-wrap {
+          height: 145vh;
+        }
+        .image-scroll-sticky {
+          top: 74px;
+          height: 72vh;
+        }
+        .image-overlay {
+          padding: 26px;
+        }
+        .image-overlay h2 {
+          font-size: 30px;
+          max-width: 100%;
+        }
+        .image-heading-pill {
+          font-size: 15px;
+          padding: 12px 14px;
+        }
+        .footer-main {
+          grid-template-columns: 1fr;
+          gap: 24px;
+          text-align: center;
+        }
+        .footer-about {
+          margin: 0 auto;
+        }
+        .footer-brand {
+          justify-content: center;
+        }
+        .footer-bottom {
+          justify-content: center;
+          text-align: center;
+        }
+        .footer-mini-links {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="#home" class="logo">
+        <img
+          src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png"
+          alt="Aegix AI logo"
+        />
+        <div class="brand-copy">
+          <small>Aegix AI</small>
+          <strong>Autonomous Cyber Defense</strong>
         </div>
-      </div>
+      </a>
 
-      <div class="hero-actions">
-        <a href="#features" class="btn-pricing">Explore Platform</a>
-<a href="#contact" class="btn-secondary" id="bookDemoBtn">Book a Demo</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="why-section" id="advantage">
-    <div class="container">
-      <div class="section-head reveal reveal-up">
-        <div class="section-tag"><span></span> Why Choose Aegix AI</div>
-        <h2>Driving growth with stronger cyber resilience</h2>
-        <p>
-          We combine AI-driven detection, intelligent security workflows, and a premium enterprise experience
-          so your platform looks powerful in an exhibition and feels credible for real business adoption.
-        </p>
-      </div>
-
-      <div class="why-wrapper">
-        <div class="why-left">
-          <div class="why-card reveal reveal-left delay-1">
-            <div class="mini-icon">🛡</div>
-            <h3>Cyber Defense</h3>
-            <p>Protect your digital environment with advanced intrusion detection, event correlation, and response automation.</p>
-          </div>
-          <div class="why-card reveal reveal-left delay-2">
-            <div class="mini-icon">📡</div>
-            <h3>Always Watching</h3>
-            <p>Monitor inbound traffic, web requests, endpoint signals, and suspicious behavioral patterns around the clock.</p>
-          </div>
-        </div>
-
-        <div class="why-center reveal reveal-scale delay-2">
-          <img src="ChatGPT Image Nov 29, 2025, 02_41_51 AM.png" class="why-lock" alt="Security lock illustration">
-          <div class="why-glow"></div>
-        </div>
-
-        <div class="why-right">
-          <div class="why-card reveal reveal-right delay-1">
-            <div class="mini-icon">🧠</div>
-            <h3>Intelligence First</h3>
-            <p>AI models help classify risk, prioritize incidents, and reduce alert fatigue for faster security decisions.</p>
-          </div>
-          <div class="why-card reveal reveal-right delay-2">
-            <div class="mini-icon">⚡</div>
-            <h3>Faster Response</h3>
-            <p>Turn suspicious activity into actionable investigations with automated playbooks and clear operational visibility.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="image-scroll-section" id="security-visual">
-    <div class="container">
-      <div class="image-scroll-wrap" id="imageScrollWrap">
-        <div class="image-scroll-sticky">
-          <div class="image-box reveal reveal-scale">
-            <img src="defense.jpg" alt="Take Control of Your Digital Security" id="parallaxImage">
-            <div class="image-overlay">
-              <h2>Take Control of Your Digital Security</h2>
-              <div class="image-headings">
-                <div class="image-heading-pill"><span></span> Smart Protection</div>
-                <div class="image-heading-pill"><span></span> Enterprise Presence</div>
-                <div class="image-heading-pill"><span></span> Built for Showcase</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="features">
-    <div class="container">
-      <div class="section-head reveal reveal-up">
-        <div class="section-tag"><span></span> Platform Features</div>
-        <h2>Everything your customers expect from a modern security platform</h2>
-        <p>
-          Aegix AI is designed as a complete, customer-facing security experience. It goes beyond a simple demo
-          by showing clear value, enterprise readiness, and practical cyber defense capabilities.
-        </p>
-      </div>
-
-      <div class="grid-3">
-        <div class="feature-card reveal reveal-up delay-1">
-          <div class="mini-icon">🔎</div>
-          <h3>AI Threat Detection</h3>
-          <p>Detect suspicious activity through intelligent traffic analysis, anomaly recognition, and behavioral monitoring.</p>
-          <ul class="feature-list">
-            <li>Pattern-based and behavior-based detection</li>
-            <li>Threat scoring for faster prioritization</li>
-            <li>Alert classification to reduce noise</li>
-          </ul>
-        </div>
-
-        <div class="feature-card reveal reveal-up delay-2">
-          <div class="mini-icon">🎯</div>
-          <h3>Honeypot & Deception</h3>
-          <p>Divert attackers away from production systems and learn from malicious behavior in controlled environments.</p>
-          <ul class="feature-list">
-            <li>Decoy services and monitored interaction zones</li>
-            <li>Attacker observation without exposing real assets</li>
-            <li>Insight generation for defensive tuning</li>
-          </ul>
-        </div>
-
-        <div class="feature-card reveal reveal-up delay-3">
-          <div class="mini-icon">📊</div>
-          <h3>Security Dashboard</h3>
-          <p>Visualize attacks, threats, and response actions in a clean interface built for both demos and operations.</p>
-          <ul class="feature-list">
-            <li>Live incident overview and threat timeline</li>
-            <li>Traffic and activity summaries</li>
-            <li>Risk-based operational visibility</li>
-          </ul>
-        </div>
-
-        <div class="feature-card reveal reveal-up delay-1">
-          <div class="mini-icon">⚙</div>
-          <h3>Automated Response</h3>
-          <p>Trigger workflows that flag, block, isolate, or escalate suspicious actions before they spread further.</p>
-          <ul class="feature-list">
-            <li>Rule-driven response logic</li>
-            <li>Faster containment for common attacks</li>
-            <li>Security team workflow support</li>
-          </ul>
-        </div>
-
-        <div class="feature-card reveal reveal-up delay-2">
-          <div class="mini-icon">🌐</div>
-          <h3>Threat Intelligence Enrichment</h3>
-          <p>Add context to every event with IP reputation, geolocation insight, source analysis, and severity indicators.</p>
-          <ul class="feature-list">
-            <li>Context-rich event enrichment</li>
-            <li>Smarter investigation support</li>
-            <li>Better incident decision-making</li>
-          </ul>
-        </div>
-
-        <div class="feature-card reveal reveal-up delay-3">
-          <div class="mini-icon">🏢</div>
-          <h3>Enterprise Presentation Layer</h3>
-          <p>Show your project like a product with premium design, trust-building structure, and clear value messaging.</p>
-          <ul class="feature-list">
-            <li>Exhibition-ready presentation flow</li>
-            <li>Customer-friendly product messaging</li>
-            <li>Single-page journey for higher engagement</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="security-marquee-section">
-    <div class="security-marquee">
-      <div class="security-marquee-track">
-        <div class="security-marquee-group">
-          <div class="security-marquee-item"><span class="marquee-icon">🛡</span><span>SECURITY</span></div>
-          <div class="security-marquee-item"><span class="marquee-icon">🗝</span><span>ENCRYPTION</span></div>
-          <div class="security-marquee-item"><span class="marquee-icon">🔒</span><span>PROTECTION</span></div>
-        </div>
-        <div class="security-marquee-group" aria-hidden="true">
-          <div class="security-marquee-item"><span class="marquee-icon">🛡</span><span>SECURITY</span></div>
-          <div class="security-marquee-item"><span class="marquee-icon">🗝</span><span>ENCRYPTION</span></div>
-          <div class="security-marquee-item"><span class="marquee-icon">🔒</span><span>PROTECTION</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="security">
-    <div class="container">
-      <div class="section-head reveal reveal-up">
-        <div class="section-tag"><span></span> Security Architecture</div>
-        <h2>Built with layered protection in mind</h2>
-        <p>
-          Security buyers want more than buzzwords. This section explains how Aegix AI is positioned as a serious,
-          structured, and defense-oriented platform for modern digital environments.
-        </p>
-      </div>
-
-      <div class="security-highlight">
-        <div class="security-card reveal reveal-left delay-1">
-          <div class="mini-icon">🔐</div>
-          <h3>Core Security Principles</h3>
-          <p>Aegix AI follows a defense-in-depth mindset where visibility, control, and response work together as one system.</p>
-          <ul class="security-list">
-            <li>Layered monitoring across traffic, application behavior, and suspicious interaction patterns</li>
-            <li>Least-exposure approach using deception to reduce direct attacker access to real assets</li>
-            <li>Faster containment through response automation and operational alerting</li>
-            <li>Clear dashboards and analytics to support investigations and executive visibility</li>
-          </ul>
-        </div>
-
-        <div class="security-card reveal reveal-right delay-2">
-          <div class="mini-icon">🧩</div>
-          <h3>Deployment Readiness</h3>
-          <p>The platform concept supports modular architecture and secure integration with modern environments.</p>
-          <ul class="security-list">
-            <li>Container-friendly deployment design</li>
-            <li>Scalable services for monitoring and analytics</li>
-            <li>Adaptable for cloud, hybrid, and enterprise lab setups</li>
-            <li>Suitable for security demos, proofs of concept, and future product expansion</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="grid-3" style="margin-top:22px;">
-        <div class="security-card reveal reveal-up delay-1">
-          <div class="mini-icon">🚨</div>
-          <h3>Threat Visibility</h3>
-          <p>Track hostile behavior earlier with live indicators, suspicious pattern monitoring, and event-driven insight.</p>
-        </div>
-        <div class="security-card reveal reveal-up delay-2">
-          <div class="mini-icon">🕸</div>
-          <h3>Attack Diversion</h3>
-          <p>Honeypot-driven decoys create a safer buffer between attackers and valuable systems.</p>
-        </div>
-        <div class="security-card reveal reveal-up delay-3">
-          <div class="mini-icon">📁</div>
-          <h3>Actionable Reporting</h3>
-          <p>Translate detections into readable dashboards, alerts, and summaries for teams and decision makers.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="pricing">
-    <div class="container">
-      <div class="section-head reveal reveal-up">
-        <div class="section-tag"><span></span> Pricing</div>
-        <h2>Flexible plans for growing security needs</h2>
-        <p>
-          Choose the plan structure that fits your timeline. Switch between monthly and yearly plans to explore the right option for your business.
-        </p>
-      </div>
-
-      <div class="pricing-toggle-wrap reveal reveal-up delay-1">
-        <div class="pricing-toggle">
-          <button class="pricing-toggle-btn active" data-plan="monthly">Monthly Plans</button>
-          <button class="pricing-toggle-btn" data-plan="yearly">Yearly Plans</button>
-        </div>
-      </div>
-
-      <div class="pricing-panels">
-        <div class="pricing-panel active" id="monthlyPlans">
-          <div class="grid-3">
-            <div class="pricing-card reveal reveal-up delay-1">
-              <div class="plan-badge">1 Month</div>
-              <h3>Quick Start Plan</h3>
-              <div class="price">$29 <small>/ 1 month</small></div>
-              <p>Ideal for short-term trials, demonstrations, and startups that want to begin with focused monitoring and visibility.</p>
-              <ul class="plan-list">
-                <li>Core monitoring dashboard</li>
-                <li>Basic anomaly detection</li>
-                <li>Email alert notifications</li>
-                <li>Single environment support</li>
-              </ul>
-              <div style="margin-top:22px;">
-                <button class="btn-secondary choose-plan-btn" data-interest="Starter Plan">Choose 1 Month</button>
-              </div>
-            </div>
-
-            <div class="pricing-card featured reveal reveal-up delay-2">
-              <div class="plan-badge">3 Months</div>
-              <h3>Growth Defense Plan</h3>
-              <div class="price">$79 <small>/ 3 months</small></div>
-              <p>Best for growing businesses that need stronger detection, automated response logic, and a longer engagement window.</p>
-              <ul class="plan-list">
-                <li>Everything in 1 Month</li>
-                <li>Advanced AI threat scoring</li>
-                <li>Automated response workflows</li>
-                <li>Threat intelligence enrichment</li>
-                <li>Multi-environment support</li>
-              </ul>
-              <div style="margin-top:22px;">
-                <button class="btn-pricing choose-plan-btn" data-interest="Professional Plan">Choose 3 Months</button>
-              </div>
-            </div>
-
-            <div class="pricing-card reveal reveal-up delay-3">
-              <div class="plan-badge">6 Months</div>
-              <h3>Extended Protection Plan</h3>
-              <div class="price">$149 <small>/ 6 months</small></div>
-              <p>Designed for teams that want deeper visibility, more stability, and stronger operational support over a longer period.</p>
-              <ul class="plan-list">
-                <li>Everything in 3 Months</li>
-                <li>Longer strategic monitoring</li>
-                <li>Priority guidance and tuning</li>
-                <li>Expanded support continuity</li>
-              </ul>
-              <div style="margin-top:22px;">
-                <button class="btn-secondary choose-plan-btn" data-interest="Enterprise Plan">Choose 6 Months</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pricing-panel" id="yearlyPlans">
-          <div class="grid-3">
-            <div class="pricing-card reveal reveal-up delay-1">
-              <div class="plan-badge">Basic Plan</div>
-              <h3>Annual Basic</h3>
-              <div class="price">$199 <small>/ year</small></div>
-              <p>A strong entry-level yearly plan for teams that want reliable monitoring and steady visibility throughout the year.</p>
-              <ul class="plan-list">
-                <li>Core monitoring dashboard</li>
-                <li>Basic threat detection</li>
-                <li>Email notifications</li>
-                <li>Single environment coverage</li>
-              </ul>
-              <div style="margin-top:22px;">
-                <button class="btn-secondary choose-plan-btn" data-interest="Starter Plan">Choose Basic</button>
-              </div>
-            </div>
-
-            <div class="pricing-card featured reveal reveal-up delay-2">
-              <div class="plan-badge">Essential Plan</div>
-              <h3>Annual Essential</h3>
-              <div class="price">$349 <small>/ year</small></div>
-              <p>The most balanced option for businesses that need stronger visibility, smarter response, and richer protection capabilities.</p>
-              <ul class="plan-list">
-                <li>Everything in Basic</li>
-                <li>Advanced AI threat scoring</li>
-                <li>Automated response workflows</li>
-                <li>Threat intelligence enrichment</li>
-                <li>Multi-environment support</li>
-              </ul>
-              <div style="margin-top:22px;">
-                <button class="btn-pricing choose-plan-btn" data-interest="Professional Plan">Choose Essential</button>
-              </div>
-            </div>
-
-            <div class="pricing-card reveal reveal-up delay-3">
-              <div class="plan-badge">Premium Plan</div>
-              <h3>Annual Premium</h3>
-              <div class="price">$599 <small>/ year</small></div>
-              <p>Built for organizations that want the most complete yearly package with priority support and broader strategic coverage.</p>
-              <ul class="plan-list">
-                <li>Everything in Essential</li>
-                <li>Priority support and tuning</li>
-                <li>Broader deployment guidance</li>
-                <li>Premium annual engagement</li>
-              </ul>
-              <div style="margin-top:22px;">
-                <button class="btn-secondary choose-plan-btn" data-interest="Enterprise Plan">Choose Premium</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="testimonials">
-    <div class="container">
-      <div class="section-head reveal reveal-up">
-        <div class="section-tag"><span></span> Customer Value</div>
-        <h2>Built to inspire confidence</h2>
-        <p>
-          A strong cybersecurity website should not only look advanced, it should make customers feel that the product is capable,
-          credible, and ready to solve serious problems.
-        </p>
-      </div>
-
-      <div class="grid-3">
-        <div class="testimonial-card reveal reveal-up delay-1">
-          <p>“Aegix AI presents security in a way that feels modern, clear, and enterprise-ready. It communicates value fast.”</p>
-          <div class="testimonial-meta">Product Showcase Feedback</div>
-        </div>
-        <div class="testimonial-card reveal reveal-up delay-2">
-          <p>“The platform combines strong technical ideas with a polished customer experience, which makes it ideal for demos and pitches.”</p>
-          <div class="testimonial-meta">Innovation Review</div>
-        </div>
-        <div class="testimonial-card reveal reveal-up delay-3">
-          <p>“The pricing, security, and feature sections make the website feel complete instead of looking like an unfinished prototype.”</p>
-          <div class="testimonial-meta">Exhibition Readiness Note</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="contact">
-    <div class="container">
-      <div class="cta-panel" style="margin-bottom:24px;">
-        <h3>Ready to strengthen your digital defense?</h3>
-        <p>
-          Whether you want to present Aegix AI at an exhibition, pitch it to customers, or evolve it into a real product,
-          this single-page experience is designed to help people understand your value quickly.
-        </p>
-        <div class="hero-actions" style="margin-top:0;">
-          <a href="#pricing" class="btn-pricing">View Pricing</a>
-          <a href="#home" class="btn-secondary">Back to Top</a>
-        </div>
-      </div>
-
-      <div class="contact-wrap">
-        <div class="contact-card reveal reveal-left delay-1">
-          <div class="section-tag"><span></span> Contact Us</div>
-          <h3>Book a demo or request more information</h3>
-          <p style="margin-top:12px; color:var(--muted); line-height:1.8;">
-            Use this section for your exhibition contact flow, lead capture, or future customer inquiry process.
-            This form is now connected to your backend request demo API.
-          </p>
-          <ul class="feature-list">
-            <li>Fast customer inquiry capture</li>
-            <li>Useful for demos, pitches, and landing page conversion</li>
-            <li>Demo link email is sent through backend</li>
-          </ul>
-        </div>
-
-        <div class="contact-card reveal reveal-right delay-2">
-          <form class="contact-form" id="demoRequestForm">
-            <input type="text" id="demoName" placeholder="Your full name" required>
-            <input type="email" id="demoEmail" placeholder="Business email address" required>
-            <select id="demoInterest" required>
-              <option value="" selected disabled>Interested in</option>
-              <option>Starter Plan</option>
-              <option>Professional Plan</option>
-              <option>Enterprise Plan</option>
-              <option>Live Demo</option>
-            </select>
-            <textarea id="demoMessage" placeholder="Tell us about your security needs"></textarea>
-            <button type="submit" class="btn-pricing" style="border:none; cursor:pointer;">Request Demo</button>
-            <div class="form-status" id="demoFormStatus"></div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="footer-main">
-      <div>
-        <div class="footer-brand">
-          <img src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png" alt="Aegix AI logo">
-          <span>Aegix AI</span>
-        </div>
-        <div class="footer-about">
-          We build intelligent cyber defense experiences focused on visibility, threat detection, deception, and enterprise-ready product presentation.
-        </div>
-      </div>
-
-      <div>
-        <h3 class="footer-title">About Us</h3>
-        <ul class="footer-links">
-          <li><a href="#home">Company Overview</a></li>
-          <li><a href="#advantage">Why Choose Us</a></li>
-          <li><a href="#security-visual">Security Visual</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 class="footer-title">Services</h3>
-        <ul class="footer-links">
-          <li><a href="#features">Platform Features</a></li>
-          <li><a href="#security">Security Architecture</a></li>
-          <li><a href="#pricing">Pricing Plans</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 class="footer-title">Contact</h3>
-        <div class="footer-contact">
-          <div><a href="#contact">Book a Demo</a></div>
-          <div><a href="#contact">Request Information</a></div>
-          <div><a href="#contact">Talk to Sales</a></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <div>© 2026 Aegix AI • Intelligent cyber defense for modern digital environments.</div>
-      <div class="footer-mini-links">
+      <nav>
         <a href="#home">Home</a>
         <a href="#features">Features</a>
         <a href="#security">Security</a>
+        <a href="#pricing">Pricing</a>
         <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="account.html" class="user-pill" id="userPill">
+          <span id="headerUserName">Logged in</span>
+        </a>
+        <a class="btn-secondary" id="loginBtn" href="login.html"
+          >Login / Sign Up</a
+        >
+        <button class="btn-outline" id="logoutBtn" style="display: none">
+          Logout
+        </button>
+        <a class="btn-pricing" id="getStartedBtn" href="#pricing"
+          >Get Started</a
+        >
       </div>
-    </div>
-  </footer>
+    </header>
 
-  <script>
-const API_BASE = "https://aegixai.rummaspringst.com/api/productpage";
-    const words = [
-      "Phishing Attacks ",
-      "DDoS Attacks ",
-      "Malware ",
-      "Brute Force Attacks ",
-      "SQL Injection ",
-      "Bot Intrusions "
-    ];
+    <section class="hero" id="home">
+      <div class="rotating-image">
+        <img
+          src="Asset-2.png"
+          alt="Rotating cyber defense background"
+          style="width: 100%; height: 100%; object-fit: contain"
+        />
+      </div>
 
-    let wordIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
+      <div class="hero-content">
+        <h1>Aegix AI</h1>
+        <p class="hero-subtext">
+          Intelligent cybersecurity for modern businesses. Aegix AI helps you
+          detect threats early, monitor suspicious behavior in real time, and
+          respond with speed before attacks turn into damage.
+        </p>
 
-    function typeEffect() {
-      const current = words[wordIndex];
-      const text = document.getElementById("rotateWord");
-      if (!text) return;
+        <div class="info-row">
+          <div class="glass-box">We protect you from</div>
+          <div class="glass-box">
+            <span class="changing-text" id="rotateWord"></span>
+          </div>
+        </div>
 
-      text.textContent = current.slice(0, charIndex);
+        <div class="hero-actions">
+          <a href="#features" class="btn-pricing">Explore Platform</a>
+          <a href="#contact" class="btn-secondary" id="bookDemoBtn"
+            >Book a Demo</a
+          >
+        </div>
+      </div>
+    </section>
 
-      if (!isDeleting) {
-        charIndex++;
-        if (charIndex === current.length) {
-          isDeleting = true;
-          setTimeout(typeEffect, 1200);
+    <section class="why-section" id="advantage">
+      <div class="container">
+        <div class="section-head reveal reveal-up">
+          <div class="section-tag"><span></span> Why Choose Aegix AI</div>
+          <h2>Driving growth with stronger cyber resilience</h2>
+          <p>
+            We combine AI-driven detection, intelligent security workflows, and
+            a premium enterprise experience so your platform looks powerful in
+            an exhibition and feels credible for real business adoption.
+          </p>
+        </div>
+
+        <div class="why-wrapper">
+          <div class="why-left">
+            <div class="why-card reveal reveal-left delay-1">
+              <div class="mini-icon">🛡</div>
+              <h3>Cyber Defense</h3>
+              <p>
+                Protect your digital environment with advanced intrusion
+                detection, event correlation, and response automation.
+              </p>
+            </div>
+            <div class="why-card reveal reveal-left delay-2">
+              <div class="mini-icon">📡</div>
+              <h3>Always Watching</h3>
+              <p>
+                Monitor inbound traffic, web requests, endpoint signals, and
+                suspicious behavioral patterns around the clock.
+              </p>
+            </div>
+          </div>
+
+          <div class="why-center reveal reveal-scale delay-2">
+            <img
+              src="ChatGPT Image Nov 29, 2025, 02_41_51 AM.png"
+              class="why-lock"
+              alt="Security lock illustration"
+            />
+            <div class="why-glow"></div>
+          </div>
+
+          <div class="why-right">
+            <div class="why-card reveal reveal-right delay-1">
+              <div class="mini-icon">🧠</div>
+              <h3>Intelligence First</h3>
+              <p>
+                AI models help classify risk, prioritize incidents, and reduce
+                alert fatigue for faster security decisions.
+              </p>
+            </div>
+            <div class="why-card reveal reveal-right delay-2">
+              <div class="mini-icon">⚡</div>
+              <h3>Faster Response</h3>
+              <p>
+                Turn suspicious activity into actionable investigations with
+                automated playbooks and clear operational visibility.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="image-scroll-section" id="security-visual">
+      <div class="container">
+        <div class="image-scroll-wrap" id="imageScrollWrap">
+          <div class="image-scroll-sticky">
+            <div class="image-box reveal reveal-scale">
+              <img
+                src="defense.jpg"
+                alt="Take Control of Your Digital Security"
+                id="parallaxImage"
+              />
+              <div class="image-overlay">
+                <h2>Take Control of Your Digital Security</h2>
+                <div class="image-headings">
+                  <div class="image-heading-pill">
+                    <span></span> Smart Protection
+                  </div>
+                  <div class="image-heading-pill">
+                    <span></span> Enterprise Presence
+                  </div>
+                  <div class="image-heading-pill">
+                    <span></span> Built for Showcase
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-head reveal reveal-up">
+          <div class="section-tag"><span></span> Platform Features</div>
+          <h2>
+            Everything your customers expect from a modern security platform
+          </h2>
+          <p>
+            Aegix AI is designed as a complete, customer-facing security
+            experience. It goes beyond a simple demo by showing clear value,
+            enterprise readiness, and practical cyber defense capabilities.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <div class="feature-card reveal reveal-up delay-1">
+            <div class="mini-icon">🔎</div>
+            <h3>AI Threat Detection</h3>
+            <p>
+              Detect suspicious activity through intelligent traffic analysis,
+              anomaly recognition, and behavioral monitoring.
+            </p>
+            <ul class="feature-list">
+              <li>Pattern-based and behavior-based detection</li>
+              <li>Threat scoring for faster prioritization</li>
+              <li>Alert classification to reduce noise</li>
+            </ul>
+          </div>
+
+          <div class="feature-card reveal reveal-up delay-2">
+            <div class="mini-icon">🎯</div>
+            <h3>Honeypot & Deception</h3>
+            <p>
+              Divert attackers away from production systems and learn from
+              malicious behavior in controlled environments.
+            </p>
+            <ul class="feature-list">
+              <li>Decoy services and monitored interaction zones</li>
+              <li>Attacker observation without exposing real assets</li>
+              <li>Insight generation for defensive tuning</li>
+            </ul>
+          </div>
+
+          <div class="feature-card reveal reveal-up delay-3">
+            <div class="mini-icon">📊</div>
+            <h3>Security Dashboard</h3>
+            <p>
+              Visualize attacks, threats, and response actions in a clean
+              interface built for both demos and operations.
+            </p>
+            <ul class="feature-list">
+              <li>Live incident overview and threat timeline</li>
+              <li>Traffic and activity summaries</li>
+              <li>Risk-based operational visibility</li>
+            </ul>
+          </div>
+
+          <div class="feature-card reveal reveal-up delay-1">
+            <div class="mini-icon">⚙</div>
+            <h3>Automated Response</h3>
+            <p>
+              Trigger workflows that flag, block, isolate, or escalate
+              suspicious actions before they spread further.
+            </p>
+            <ul class="feature-list">
+              <li>Rule-driven response logic</li>
+              <li>Faster containment for common attacks</li>
+              <li>Security team workflow support</li>
+            </ul>
+          </div>
+
+          <div class="feature-card reveal reveal-up delay-2">
+            <div class="mini-icon">🌐</div>
+            <h3>Threat Intelligence Enrichment</h3>
+            <p>
+              Add context to every event with IP reputation, geolocation
+              insight, source analysis, and severity indicators.
+            </p>
+            <ul class="feature-list">
+              <li>Context-rich event enrichment</li>
+              <li>Smarter investigation support</li>
+              <li>Better incident decision-making</li>
+            </ul>
+          </div>
+
+          <div class="feature-card reveal reveal-up delay-3">
+            <div class="mini-icon">🏢</div>
+            <h3>Enterprise Presentation Layer</h3>
+            <p>
+              Show your project like a product with premium design,
+              trust-building structure, and clear value messaging.
+            </p>
+            <ul class="feature-list">
+              <li>Exhibition-ready presentation flow</li>
+              <li>Customer-friendly product messaging</li>
+              <li>Single-page journey for higher engagement</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="security-marquee-section">
+      <div class="security-marquee">
+        <div class="security-marquee-track">
+          <div class="security-marquee-group">
+            <div class="security-marquee-item">
+              <span class="marquee-icon">🛡</span><span>SECURITY</span>
+            </div>
+            <div class="security-marquee-item">
+              <span class="marquee-icon">🗝</span><span>ENCRYPTION</span>
+            </div>
+            <div class="security-marquee-item">
+              <span class="marquee-icon">🔒</span><span>PROTECTION</span>
+            </div>
+          </div>
+          <div class="security-marquee-group" aria-hidden="true">
+            <div class="security-marquee-item">
+              <span class="marquee-icon">🛡</span><span>SECURITY</span>
+            </div>
+            <div class="security-marquee-item">
+              <span class="marquee-icon">🗝</span><span>ENCRYPTION</span>
+            </div>
+            <div class="security-marquee-item">
+              <span class="marquee-icon">🔒</span><span>PROTECTION</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="security">
+      <div class="container">
+        <div class="section-head reveal reveal-up">
+          <div class="section-tag"><span></span> Security Architecture</div>
+          <h2>Built with layered protection in mind</h2>
+          <p>
+            Security buyers want more than buzzwords. This section explains how
+            Aegix AI is positioned as a serious, structured, and
+            defense-oriented platform for modern digital environments.
+          </p>
+        </div>
+
+        <div class="security-highlight">
+          <div class="security-card reveal reveal-left delay-1">
+            <div class="mini-icon">🔐</div>
+            <h3>Core Security Principles</h3>
+            <p>
+              Aegix AI follows a defense-in-depth mindset where visibility,
+              control, and response work together as one system.
+            </p>
+            <ul class="security-list">
+              <li>
+                Layered monitoring across traffic, application behavior, and
+                suspicious interaction patterns
+              </li>
+              <li>
+                Least-exposure approach using deception to reduce direct
+                attacker access to real assets
+              </li>
+              <li>
+                Faster containment through response automation and operational
+                alerting
+              </li>
+              <li>
+                Clear dashboards and analytics to support investigations and
+                executive visibility
+              </li>
+            </ul>
+          </div>
+
+          <div class="security-card reveal reveal-right delay-2">
+            <div class="mini-icon">🧩</div>
+            <h3>Deployment Readiness</h3>
+            <p>
+              The platform concept supports modular architecture and secure
+              integration with modern environments.
+            </p>
+            <ul class="security-list">
+              <li>Container-friendly deployment design</li>
+              <li>Scalable services for monitoring and analytics</li>
+              <li>Adaptable for cloud, hybrid, and enterprise lab setups</li>
+              <li>
+                Suitable for security demos, proofs of concept, and future
+                product expansion
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top: 22px">
+          <div class="security-card reveal reveal-up delay-1">
+            <div class="mini-icon">🚨</div>
+            <h3>Threat Visibility</h3>
+            <p>
+              Track hostile behavior earlier with live indicators, suspicious
+              pattern monitoring, and event-driven insight.
+            </p>
+          </div>
+          <div class="security-card reveal reveal-up delay-2">
+            <div class="mini-icon">🕸</div>
+            <h3>Attack Diversion</h3>
+            <p>
+              Honeypot-driven decoys create a safer buffer between attackers and
+              valuable systems.
+            </p>
+          </div>
+          <div class="security-card reveal reveal-up delay-3">
+            <div class="mini-icon">📁</div>
+            <h3>Actionable Reporting</h3>
+            <p>
+              Translate detections into readable dashboards, alerts, and
+              summaries for teams and decision makers.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="container">
+        <div class="section-head reveal reveal-up">
+          <div class="section-tag"><span></span> Pricing</div>
+          <h2>Flexible plans for growing security needs</h2>
+          <p>
+            Choose the plan structure that fits your timeline. Switch between
+            monthly and yearly plans to explore the right option for your
+            business.
+          </p>
+        </div>
+
+        <div class="pricing-toggle-wrap reveal reveal-up delay-1">
+          <div class="pricing-toggle">
+            <button class="pricing-toggle-btn active" data-plan="monthly">
+              Monthly Plans
+            </button>
+            <button class="pricing-toggle-btn" data-plan="yearly">
+              Yearly Plans
+            </button>
+          </div>
+        </div>
+
+        <div class="pricing-panels">
+          <div class="pricing-panel active" id="monthlyPlans">
+            <div class="grid-3">
+              <div class="pricing-card reveal reveal-up delay-1">
+                <div class="plan-badge">1 Month</div>
+                <h3>Quick Start Plan</h3>
+                <div class="price">$29 <small>/ 1 month</small></div>
+                <p>
+                  Ideal for short-term trials, demonstrations, and startups that
+                  want to begin with focused monitoring and visibility.
+                </p>
+                <ul class="plan-list">
+                  <li>Core monitoring dashboard</li>
+                  <li>Basic anomaly detection</li>
+                  <li>Email alert notifications</li>
+                  <li>Single environment support</li>
+                </ul>
+                <div style="margin-top: 22px">
+                  <button
+                    class="btn-secondary choose-plan-btn"
+                    data-interest="Starter Plan"
+                  >
+                    Choose 1 Month
+                  </button>
+                </div>
+              </div>
+
+              <div class="pricing-card featured reveal reveal-up delay-2">
+                <div class="plan-badge">3 Months</div>
+                <h3>Growth Defense Plan</h3>
+                <div class="price">$79 <small>/ 3 months</small></div>
+                <p>
+                  Best for growing businesses that need stronger detection,
+                  automated response logic, and a longer engagement window.
+                </p>
+                <ul class="plan-list">
+                  <li>Everything in 1 Month</li>
+                  <li>Advanced AI threat scoring</li>
+                  <li>Automated response workflows</li>
+                  <li>Threat intelligence enrichment</li>
+                  <li>Multi-environment support</li>
+                </ul>
+                <div style="margin-top: 22px">
+                  <button
+                    class="btn-pricing choose-plan-btn"
+                    data-interest="Professional Plan"
+                  >
+                    Choose 3 Months
+                  </button>
+                </div>
+              </div>
+
+              <div class="pricing-card reveal reveal-up delay-3">
+                <div class="plan-badge">6 Months</div>
+                <h3>Extended Protection Plan</h3>
+                <div class="price">$149 <small>/ 6 months</small></div>
+                <p>
+                  Designed for teams that want deeper visibility, more
+                  stability, and stronger operational support over a longer
+                  period.
+                </p>
+                <ul class="plan-list">
+                  <li>Everything in 3 Months</li>
+                  <li>Longer strategic monitoring</li>
+                  <li>Priority guidance and tuning</li>
+                  <li>Expanded support continuity</li>
+                </ul>
+                <div style="margin-top: 22px">
+                  <button
+                    class="btn-secondary choose-plan-btn"
+                    data-interest="Enterprise Plan"
+                  >
+                    Choose 6 Months
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pricing-panel" id="yearlyPlans">
+            <div class="grid-3">
+              <div class="pricing-card reveal reveal-up delay-1">
+                <div class="plan-badge">Basic Plan</div>
+                <h3>Annual Basic</h3>
+                <div class="price">$199 <small>/ year</small></div>
+                <p>
+                  A strong entry-level yearly plan for teams that want reliable
+                  monitoring and steady visibility throughout the year.
+                </p>
+                <ul class="plan-list">
+                  <li>Core monitoring dashboard</li>
+                  <li>Basic threat detection</li>
+                  <li>Email notifications</li>
+                  <li>Single environment coverage</li>
+                </ul>
+                <div style="margin-top: 22px">
+                  <button
+                    class="btn-secondary choose-plan-btn"
+                    data-interest="Starter Plan"
+                  >
+                    Choose Basic
+                  </button>
+                </div>
+              </div>
+
+              <div class="pricing-card featured reveal reveal-up delay-2">
+                <div class="plan-badge">Essential Plan</div>
+                <h3>Annual Essential</h3>
+                <div class="price">$349 <small>/ year</small></div>
+                <p>
+                  The most balanced option for businesses that need stronger
+                  visibility, smarter response, and richer protection
+                  capabilities.
+                </p>
+                <ul class="plan-list">
+                  <li>Everything in Basic</li>
+                  <li>Advanced AI threat scoring</li>
+                  <li>Automated response workflows</li>
+                  <li>Threat intelligence enrichment</li>
+                  <li>Multi-environment support</li>
+                </ul>
+                <div style="margin-top: 22px">
+                  <button
+                    class="btn-pricing choose-plan-btn"
+                    data-interest="Professional Plan"
+                  >
+                    Choose Essential
+                  </button>
+                </div>
+              </div>
+
+              <div class="pricing-card reveal reveal-up delay-3">
+                <div class="plan-badge">Premium Plan</div>
+                <h3>Annual Premium</h3>
+                <div class="price">$599 <small>/ year</small></div>
+                <p>
+                  Built for organizations that want the most complete yearly
+                  package with priority support and broader strategic coverage.
+                </p>
+                <ul class="plan-list">
+                  <li>Everything in Essential</li>
+                  <li>Priority support and tuning</li>
+                  <li>Broader deployment guidance</li>
+                  <li>Premium annual engagement</li>
+                </ul>
+                <div style="margin-top: 22px">
+                  <button
+                    class="btn-secondary choose-plan-btn"
+                    data-interest="Enterprise Plan"
+                  >
+                    Choose Premium
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="testimonials">
+      <div class="container">
+        <div class="section-head reveal reveal-up">
+          <div class="section-tag"><span></span> Customer Value</div>
+          <h2>Built to inspire confidence</h2>
+          <p>
+            A strong cybersecurity website should not only look advanced, it
+            should make customers feel that the product is capable, credible,
+            and ready to solve serious problems.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <div class="testimonial-card reveal reveal-up delay-1">
+            <p>
+              “Aegix AI presents security in a way that feels modern, clear, and
+              enterprise-ready. It communicates value fast.”
+            </p>
+            <div class="testimonial-meta">Product Showcase Feedback</div>
+          </div>
+          <div class="testimonial-card reveal reveal-up delay-2">
+            <p>
+              “The platform combines strong technical ideas with a polished
+              customer experience, which makes it ideal for demos and pitches.”
+            </p>
+            <div class="testimonial-meta">Innovation Review</div>
+          </div>
+          <div class="testimonial-card reveal reveal-up delay-3">
+            <p>
+              “The pricing, security, and feature sections make the website feel
+              complete instead of looking like an unfinished prototype.”
+            </p>
+            <div class="testimonial-meta">Exhibition Readiness Note</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="cta-panel" style="margin-bottom: 24px">
+          <h3>Ready to strengthen your digital defense?</h3>
+          <p>
+            Whether you want to present Aegix AI at an exhibition, pitch it to
+            customers, or evolve it into a real product, this single-page
+            experience is designed to help people understand your value quickly.
+          </p>
+          <div class="hero-actions" style="margin-top: 0">
+            <a href="#pricing" class="btn-pricing">View Pricing</a>
+            <a href="#home" class="btn-secondary">Back to Top</a>
+          </div>
+        </div>
+
+        <div class="contact-wrap">
+          <div class="contact-card reveal reveal-left delay-1">
+            <div class="section-tag"><span></span> Contact Us</div>
+            <h3>Book a demo or request more information</h3>
+            <p style="margin-top: 12px; color: var(--muted); line-height: 1.8">
+              Use this section for your exhibition contact flow, lead capture,
+              or future customer inquiry process. This form is now connected to
+              your backend request demo API.
+            </p>
+            <ul class="feature-list">
+              <li>Fast customer inquiry capture</li>
+              <li>Useful for demos, pitches, and landing page conversion</li>
+              <li>Demo link email is sent through backend</li>
+            </ul>
+          </div>
+
+          <div class="contact-card reveal reveal-right delay-2">
+            <form class="contact-form" id="demoRequestForm">
+              <input
+                type="text"
+                id="demoName"
+                placeholder="Your full name"
+                required
+              />
+              <input
+                type="email"
+                id="demoEmail"
+                placeholder="Business email address"
+                required
+              />
+              <select id="demoInterest" required>
+                <option value="" selected disabled>Interested in</option>
+                <option>Starter Plan</option>
+                <option>Professional Plan</option>
+                <option>Enterprise Plan</option>
+                <option>Live Demo</option>
+              </select>
+              <textarea
+                id="demoMessage"
+                placeholder="Tell us about your security needs"
+              ></textarea>
+              <button
+                type="submit"
+                class="btn-pricing"
+                style="border: none; cursor: pointer"
+              >
+                Request Demo
+              </button>
+              <div class="form-status" id="demoFormStatus"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-main">
+        <div>
+          <div class="footer-brand">
+            <img
+              src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png"
+              alt="Aegix AI logo"
+            />
+            <span>Aegix AI</span>
+          </div>
+          <div class="footer-about">
+            We build intelligent cyber defense experiences focused on
+            visibility, threat detection, deception, and enterprise-ready
+            product presentation.
+          </div>
+        </div>
+
+        <div>
+          <h3 class="footer-title">About Us</h3>
+          <ul class="footer-links">
+            <li><a href="#home">Company Overview</a></li>
+            <li><a href="#advantage">Why Choose Us</a></li>
+            <li><a href="#security-visual">Security Visual</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-title">Services</h3>
+          <ul class="footer-links">
+            <li><a href="#features">Platform Features</a></li>
+            <li><a href="#security">Security Architecture</a></li>
+            <li><a href="#pricing">Pricing Plans</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-title">Contact</h3>
+          <div class="footer-contact">
+            <div><a href="#contact">Book a Demo</a></div>
+            <div><a href="#contact">Request Information</a></div>
+            <div><a href="#contact">Talk to Sales</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          © 2026 Aegix AI • Intelligent cyber defense for modern digital
+          environments.
+        </div>
+        <div class="footer-mini-links">
+          <a href="#home">Home</a>
+          <a href="#features">Features</a>
+          <a href="#security">Security</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const API_BASE = "/api/productpage";
+      const words = [
+        "Phishing Attacks ",
+        "DDoS Attacks ",
+        "Malware ",
+        "Brute Force Attacks ",
+        "SQL Injection ",
+        "Bot Intrusions ",
+      ];
+
+      let wordIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+
+      function typeEffect() {
+        const current = words[wordIndex];
+        const text = document.getElementById("rotateWord");
+        if (!text) return;
+
+        text.textContent = current.slice(0, charIndex);
+
+        if (!isDeleting) {
+          charIndex++;
+          if (charIndex === current.length) {
+            isDeleting = true;
+            setTimeout(typeEffect, 1200);
+            return;
+          }
+        } else {
+          charIndex--;
+          if (charIndex === 0) {
+            isDeleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+          }
+        }
+
+        setTimeout(typeEffect, isDeleting ? 45 : 90);
+      }
+
+      typeEffect();
+
+      const scrollWrap = document.getElementById("imageScrollWrap");
+      const parallaxImage = document.getElementById("parallaxImage");
+
+      let raf = null;
+
+      function updateImageReveal() {
+        if (!scrollWrap || !parallaxImage) return;
+
+        const rect = scrollWrap.getBoundingClientRect();
+        const viewportH = window.innerHeight;
+        const total = rect.height - viewportH;
+
+        let progress = 0;
+        if (total > 0) {
+          progress = Math.min(Math.max(-rect.top / total, 0), 1);
+        }
+
+        const maxShift =
+          parallaxImage.offsetHeight - parallaxImage.parentElement.offsetHeight;
+        const imageShift = progress * maxShift;
+
+        parallaxImage.style.transform = `translateY(-${imageShift}px)`;
+        raf = null;
+      }
+
+      function handleImageScroll() {
+        if (raf) return;
+        raf = requestAnimationFrame(updateImageReveal);
+      }
+
+      window.addEventListener("scroll", handleImageScroll, { passive: true });
+      window.addEventListener("resize", handleImageScroll);
+      window.addEventListener("load", handleImageScroll);
+
+      const revealElements = document.querySelectorAll(".reveal");
+
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("show");
+            } else {
+              entry.target.classList.remove("show");
+            }
+          });
+        },
+        {
+          threshold: 0.16,
+          rootMargin: "0px 0px -8% 0px",
+        },
+      );
+
+      revealElements.forEach((el) => revealObserver.observe(el));
+
+      const pricingButtons = document.querySelectorAll(".pricing-toggle-btn");
+      const monthlyPlans = document.getElementById("monthlyPlans");
+      const yearlyPlans = document.getElementById("yearlyPlans");
+
+      pricingButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          pricingButtons.forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+
+          const selected = button.getAttribute("data-plan");
+
+          if (selected === "monthly") {
+            monthlyPlans.classList.add("active");
+            yearlyPlans.classList.remove("active");
+          } else {
+            yearlyPlans.classList.add("active");
+            monthlyPlans.classList.remove("active");
+          }
+        });
+      });
+
+      function getStoredToken() {
+        return localStorage.getItem("aegix_token") || "";
+      }
+
+      function getStoredUser() {
+        const raw = localStorage.getItem("aegix_user");
+        return raw ? JSON.parse(raw) : null;
+      }
+
+      function setHeaderAuthUI() {
+        const token = getStoredToken();
+        const user = getStoredUser();
+
+        const userPill = document.getElementById("userPill");
+        const headerUserName = document.getElementById("headerUserName");
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const getStartedBtn = document.getElementById("getStartedBtn");
+        const pricingSection = document.getElementById("pricing");
+        const bookDemoBtn = document.getElementById("bookDemoBtn");
+        const contactSection = document.getElementById("contact");
+
+        if (token && user) {
+          headerUserName.textContent = `Hi, ${user.name}`;
+          userPill.classList.add("show");
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "inline-flex";
+
+          const demoName = document.getElementById("demoName");
+          const demoEmail = document.getElementById("demoEmail");
+
+          if (demoName && !demoName.value) demoName.value = user.name || "";
+          if (demoEmail && !demoEmail.value) demoEmail.value = user.email || "";
+
+          if (user.selectedPlan) {
+            if (getStartedBtn) getStartedBtn.style.display = "none";
+            if (pricingSection) pricingSection.style.display = "none";
+            if (bookDemoBtn) bookDemoBtn.style.display = "none";
+            if (contactSection) contactSection.style.display = "none";
+          } else {
+            if (getStartedBtn) getStartedBtn.style.display = "inline-flex";
+            if (pricingSection) pricingSection.style.display = "block";
+            if (bookDemoBtn) bookDemoBtn.style.display = "inline-flex";
+            if (contactSection) contactSection.style.display = "block";
+          }
+        } else {
+          userPill.classList.remove("show");
+          loginBtn.style.display = "inline-flex";
+          logoutBtn.style.display = "none";
+
+          if (getStartedBtn) getStartedBtn.style.display = "inline-flex";
+          if (pricingSection) pricingSection.style.display = "block";
+          if (bookDemoBtn) bookDemoBtn.style.display = "inline-flex";
+          if (contactSection) contactSection.style.display = "block";
+        }
+      }
+
+      async function validateProfile() {
+        const token = getStoredToken();
+
+        if (!token) {
+          setHeaderAuthUI();
           return;
         }
-      } else {
-        charIndex--;
-        if (charIndex === 0) {
-          isDeleting = false;
-          wordIndex = (wordIndex + 1) % words.length;
+
+        try {
+          const res = await fetch(`${API_BASE}/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!res.ok) {
+            localStorage.removeItem("aegix_token");
+            localStorage.removeItem("aegix_user");
+          } else {
+            const user = await res.json();
+            localStorage.setItem("aegix_user", JSON.stringify(user));
+          }
+        } catch (err) {
+          console.error("Profile validation failed");
         }
+
+        setHeaderAuthUI();
       }
-
-      setTimeout(typeEffect, isDeleting ? 45 : 90);
-    }
-
-    typeEffect();
-
-    const scrollWrap = document.getElementById("imageScrollWrap");
-    const parallaxImage = document.getElementById("parallaxImage");
-
-    let raf = null;
-
-    function updateImageReveal() {
-      if (!scrollWrap || !parallaxImage) return;
-
-      const rect = scrollWrap.getBoundingClientRect();
-      const viewportH = window.innerHeight;
-      const total = rect.height - viewportH;
-
-      let progress = 0;
-      if (total > 0) {
-        progress = Math.min(Math.max((-rect.top) / total, 0), 1);
-      }
-
-      const maxShift = parallaxImage.offsetHeight - parallaxImage.parentElement.offsetHeight;
-      const imageShift = progress * maxShift;
-
-      parallaxImage.style.transform = `translateY(-${imageShift}px)`;
-      raf = null;
-    }
-
-    function handleImageScroll() {
-      if (raf) return;
-      raf = requestAnimationFrame(updateImageReveal);
-    }
-
-    window.addEventListener("scroll", handleImageScroll, { passive: true });
-    window.addEventListener("resize", handleImageScroll);
-    window.addEventListener("load", handleImageScroll);
-
-    const revealElements = document.querySelectorAll(".reveal");
-
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("show");
-        } else {
-          entry.target.classList.remove("show");
-        }
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aegix_token");
+        localStorage.removeItem("aegix_user");
+        setHeaderAuthUI();
+        window.location.href = "login.html";
       });
-    }, {
-      threshold: 0.16,
-      rootMargin: "0px 0px -8% 0px"
-    });
 
-    revealElements.forEach((el) => revealObserver.observe(el));
+      document.querySelectorAll(".choose-plan-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const interest = btn.getAttribute("data-interest");
 
-    const pricingButtons = document.querySelectorAll(".pricing-toggle-btn");
-    const monthlyPlans = document.getElementById("monthlyPlans");
-    const yearlyPlans = document.getElementById("yearlyPlans");
+          const select = document.getElementById("demoInterest");
+          if (select) {
+            select.value = interest;
+          }
 
-    pricingButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        pricingButtons.forEach((btn) => btn.classList.remove("active"));
-        button.classList.add("active");
-
-        const selected = button.getAttribute("data-plan");
-
-        if (selected === "monthly") {
-          monthlyPlans.classList.add("active");
-          yearlyPlans.classList.remove("active");
-        } else {
-          yearlyPlans.classList.add("active");
-          monthlyPlans.classList.remove("active");
-        }
+          choosePlan(interest);
+        });
       });
-    });
 
-    function getStoredToken() {
-      return localStorage.getItem("aegix_token") || "";
-    }
-
-    function getStoredUser() {
-      const raw = localStorage.getItem("aegix_user");
-      return raw ? JSON.parse(raw) : null;
-    }
-
-   function setHeaderAuthUI() {
-  const token = getStoredToken();
-  const user = getStoredUser();
-
-  const userPill = document.getElementById("userPill");
-  const headerUserName = document.getElementById("headerUserName");
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const getStartedBtn = document.getElementById("getStartedBtn");
-  const pricingSection = document.getElementById("pricing");
-  const bookDemoBtn = document.getElementById("bookDemoBtn");
-  const contactSection = document.getElementById("contact");
-
-  if (token && user) {
-    headerUserName.textContent = `Hi, ${user.name}`;
-    userPill.classList.add("show");
-    loginBtn.style.display = "none";
-    logoutBtn.style.display = "inline-flex";
-
-    const demoName = document.getElementById("demoName");
-    const demoEmail = document.getElementById("demoEmail");
-
-    if (demoName && !demoName.value) demoName.value = user.name || "";
-    if (demoEmail && !demoEmail.value) demoEmail.value = user.email || "";
-
-    if (user.selectedPlan) {
-      if (getStartedBtn) getStartedBtn.style.display = "none";
-      if (pricingSection) pricingSection.style.display = "none";
-      if (bookDemoBtn) bookDemoBtn.style.display = "none";
-      if (contactSection) contactSection.style.display = "none";
-    } else {
-      if (getStartedBtn) getStartedBtn.style.display = "inline-flex";
-      if (pricingSection) pricingSection.style.display = "block";
-      if (bookDemoBtn) bookDemoBtn.style.display = "inline-flex";
-      if (contactSection) contactSection.style.display = "block";
-    }
-  } else {
-    userPill.classList.remove("show");
-    loginBtn.style.display = "inline-flex";
-    logoutBtn.style.display = "none";
-
-    if (getStartedBtn) getStartedBtn.style.display = "inline-flex";
-    if (pricingSection) pricingSection.style.display = "block";
-    if (bookDemoBtn) bookDemoBtn.style.display = "inline-flex";
-    if (contactSection) contactSection.style.display = "block";
-  }
-}
-
-    async function validateProfile() {
-  const token = getStoredToken();
-
-  if (!token) {
-    setHeaderAuthUI();
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_BASE}/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`
+      function setDemoStatus(message, type = "") {
+        const status = document.getElementById("demoFormStatus");
+        status.textContent = message;
+        status.className = "form-status";
+        if (type) {
+          status.classList.add(type);
+        }
       }
-    });
+      async function choosePlan(interest) {
+        const token = getStoredToken();
+        const user = getStoredUser();
 
-    if (!res.ok) {
-      localStorage.removeItem("aegix_token");
-      localStorage.removeItem("aegix_user");
-    } else {
-      const user = await res.json();
-      localStorage.setItem("aegix_user", JSON.stringify(user));
-    }
-  } catch (err) {
-    console.error("Profile validation failed");
-  }
+        if (!token || !user) {
+          localStorage.setItem("aegix_selected_plan", interest);
+          window.location.href = "login.html";
+          return;
+        }
 
-  setHeaderAuthUI();
-}
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("aegix_token");
-      localStorage.removeItem("aegix_user");
-      setHeaderAuthUI();
-      window.location.href = "login.html";
-    });
+        try {
+          const res = await fetch(`${API_BASE}/select-plan`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              interest,
+            }),
+          });
 
-  document.querySelectorAll(".choose-plan-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const interest = btn.getAttribute("data-interest");
+          const data = await res.json();
 
-    const select = document.getElementById("demoInterest");
-    if (select) {
-      select.value = interest;
-    }
+          if (!res.ok) {
+            alert(data.msg || data.message || "Failed to save selected plan.");
+            return;
+          }
 
-    choosePlan(interest);
-  });
-});
+          if (data.user) {
+            localStorage.setItem("aegix_user", JSON.stringify(data.user));
+          }
 
-    function setDemoStatus(message, type = "") {
-      const status = document.getElementById("demoFormStatus");
-      status.textContent = message;
-      status.className = "form-status";
-      if (type) {
-        status.classList.add(type);
-      }
-    }
- async function choosePlan(interest) {
-  const token = getStoredToken();
-  const user = getStoredUser();
-
-  if (!token || !user) {
-    localStorage.setItem("aegix_selected_plan", interest);
-    window.location.href = "login.html";
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_BASE}/select-plan`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        interest
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.msg || data.message || "Failed to save selected plan.");
-      return;
-    }
-
-    if (data.user) {
-      localStorage.setItem("aegix_user", JSON.stringify(data.user));
-    }
-
-    alert("Your selected package has been saved and emailed successfully.");
-    setHeaderAuthUI();
-    window.location.href = "account.html";
-  } catch (err) {
-    alert("Server error while saving selected plan.");
-  }
-}
-
-    document.getElementById("demoRequestForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById("demoName").value.trim();
-      const email = document.getElementById("demoEmail").value.trim();
-      const interest = document.getElementById("demoInterest").value;
-      const message = document.getElementById("demoMessage").value.trim();
-
-      if (!name || !email || !interest) {
-        setDemoStatus("Please fill name, email, and interest first.", "error");
-        return;
+          alert(
+            "Your selected package has been saved and emailed successfully.",
+          );
+          setHeaderAuthUI();
+          window.location.href = "account.html";
+        } catch (err) {
+          alert("Server error while saving selected plan.");
+        }
       }
 
-      setDemoStatus("Sending demo link...");
+      document
+        .getElementById("demoRequestForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-      try {
-        const res = await fetch(`${API_BASE}/request-demo`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            interest,
-            message
-          })
+          const name = document.getElementById("demoName").value.trim();
+          const email = document.getElementById("demoEmail").value.trim();
+          const interest = document.getElementById("demoInterest").value;
+          const message = document.getElementById("demoMessage").value.trim();
+
+          if (!name || !email || !interest) {
+            setDemoStatus(
+              "Please fill name, email, and interest first.",
+              "error",
+            );
+            return;
+          }
+
+          setDemoStatus("Sending demo link...");
+
+          try {
+            const res = await fetch(`${API_BASE}/request-demo`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name,
+                email,
+                interest,
+                message,
+              }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              setDemoStatus(
+                data.msg || data.message || "Failed to send demo link.",
+                "error",
+              );
+              return;
+            }
+
+            setDemoStatus(
+              "Demo link sent successfully to your email.",
+              "success",
+            );
+            document.getElementById("demoMessage").value = "";
+          } catch (err) {
+            setDemoStatus("Server error. Please try again.", "error");
+          }
         });
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          setDemoStatus(data.msg || data.message || "Failed to send demo link.", "error");
-          return;
-        }
-
-        setDemoStatus("Demo link sent successfully to your email.", "success");
-        document.getElementById("demoMessage").value = "";
-      } catch (err) {
-        setDemoStatus("Server error. Please try again.", "error");
-      }
-    });
-
-    validateProfile();
-  </script>
-
-</body>
+      validateProfile();
+    </script>
+  </body>
 </html>

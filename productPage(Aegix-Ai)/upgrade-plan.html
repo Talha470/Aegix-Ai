@@ -1,516 +1,553 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aegix AI | Upgrade Plan</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700&display=swap"
-    rel="stylesheet"
-  />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aegix AI | Upgrade Plan</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <style>
-    :root {
-      --bg-1: #0d0d0f;
-      --bg-2: #111116;
-      --bg-3: #0b1220;
-      --text: #e6eef8;
-      --muted: #9fb1c7;
-      --line: rgba(255, 255, 255, 0.12);
-      --card: rgba(255, 255, 255, 0.035);
-      --gradient-from: #00f0ff;
-      --gradient-to: #0066ff;
-      --transition: 0.35s ease;
-      --radius: 22px;
-      --success: #44d17a;
-      --danger: #ff6b6b;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Inter", system-ui, sans-serif;
-      color: var(--text);
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(0, 0, 0, 0.08), transparent 18%),
-        radial-gradient(circle at 80% 0%, rgba(0, 0, 0, 0.08), transparent 18%),
-        var(--bg-1);
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 8px 16px;
-      position: sticky;
-      top: 14px;
-      z-index: 50;
-      width: min(1080px, calc(100% - 28px));
-      margin: 14px auto 0;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.045);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo img {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      object-fit: cover;
-    }
-
-    .brand-copy small {
-      display: block;
-      color: #91a7bf;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-size: 10px;
-      margin-bottom: 4px;
-    }
-
-    .brand-copy strong {
-      font-size: 13px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border-radius: 12px;
-      font-weight: 700;
-      padding: 11px 16px;
-      font-size: 13px;
-      border: none;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .btn-primary {
-      background: linear-gradient(90deg, var(--gradient-from), var(--gradient-to));
-      color: white;
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.045);
-      border: 1px solid var(--line);
-      color: var(--text);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .upgrade-page {
-      width: min(1120px, calc(100% - 40px));
-      margin: 40px auto 70px;
-      display: grid;
-      gap: 24px;
-    }
-
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      background: rgba(255, 255, 255, 0.035);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-      padding: 28px;
-    }
-
-    .hero-card {
-      position: relative;
-      overflow: hidden;
-      text-align: center;
-    }
-
-    .hero-card::before {
-      content: "";
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 240, 255, 0.14), transparent 70%);
-      top: -70px;
-      left: -70px;
-      pointer-events: none;
-    }
-
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 102, 255, 0.14), transparent 70%);
-      bottom: -70px;
-      right: -70px;
-      pointer-events: none;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: #bfefff;
-      font-size: 13px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .tag span {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--gradient-from);
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
-    }
-
-    h1 {
-      margin: 0 0 14px;
-      font-family: "Orbitron", sans-serif;
-      font-size: 42px;
-      line-height: 1.15;
-      background: linear-gradient(90deg, var(--gradient-from), var(--gradient-to));
-      -webkit-background-clip: text;
-      color: transparent;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-text {
-      color: var(--muted);
-      line-height: 1.85;
-      font-size: 15px;
-      position: relative;
-      z-index: 1;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .current-plan {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 22px;
-      padding: 22px;
-      line-height: 1.9;
-      color: #edf7ff;
-    }
-
-    .section-title {
-      margin-bottom: 18px;
-    }
-
-    .section-title h2 {
-      margin: 0 0 8px;
-      font-family: "Orbitron", sans-serif;
-      font-size: 28px;
-      color: #fff;
-    }
-
-    .section-title p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .plans {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-    }
-
-    .card {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 22px;
-      padding: 24px;
-      transition: var(--transition);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.16);
-      border-color: rgba(0, 255, 255, 0.24);
-    }
-
-    .plan-badge {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 700;
-      color: #d9ffff;
-      background: rgba(0, 255, 255, 0.12);
-      border: 1px solid rgba(0, 255, 255, 0.2);
-      padding: 8px 10px;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
-
-    .card h3 {
-      margin: 0 0 12px;
-      font-size: 24px;
-    }
-
-    .price {
-      font-family: "Orbitron", sans-serif;
-      font-size: 34px;
-      color: #fff;
-      margin-bottom: 12px;
-    }
-
-    .card p {
-      margin: 0 0 18px;
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 15px;
-    }
-
-    .status {
-      margin-top: 18px;
-      min-height: 18px;
-      font-size: 14px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    .success {
-      color: var(--success);
-    }
-
-    .error {
-      color: var(--danger);
-    }
-
-    @media (max-width: 900px) {
-      .plans {
-        grid-template-columns: 1fr;
+    <style>
+      :root {
+        --bg-1: #0d0d0f;
+        --bg-2: #111116;
+        --bg-3: #0b1220;
+        --text: #e6eef8;
+        --muted: #9fb1c7;
+        --line: rgba(255, 255, 255, 0.12);
+        --card: rgba(255, 255, 255, 0.035);
+        --gradient-from: #00f0ff;
+        --gradient-to: #0066ff;
+        --transition: 0.35s ease;
+        --radius: 22px;
+        --success: #44d17a;
+        --danger: #ff6b6b;
       }
-    }
 
-    @media (max-width: 700px) {
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--text);
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top, rgba(0, 0, 0, 0.08), transparent 18%),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(0, 0, 0, 0.08),
+            transparent 18%
+          ),
+          var(--bg-1);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
       header {
-        flex-wrap: wrap;
-        justify-content: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 16px;
+        position: sticky;
+        top: 14px;
+        z-index: 50;
+        width: min(1080px, calc(100% - 28px));
+        margin: 14px auto 0;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.045);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo img {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+
+      .brand-copy small {
+        display: block;
+        color: #91a7bf;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 10px;
+        margin-bottom: 4px;
+      }
+
+      .brand-copy strong {
+        font-size: 13px;
       }
 
       .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
+        gap: 10px;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 11px 16px;
+        font-size: 13px;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        color: white;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .upgrade-page {
+        width: min(1120px, calc(100% - 40px));
+        margin: 40px auto 70px;
+        display: grid;
+        gap: 24px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.035);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        padding: 28px;
+      }
+
+      .hero-card {
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 240, 255, 0.14),
+          transparent 70%
+        );
+        top: -70px;
+        left: -70px;
+        pointer-events: none;
+      }
+
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 102, 255, 0.14),
+          transparent 70%
+        );
+        bottom: -70px;
+        right: -70px;
+        pointer-events: none;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #bfefff;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .tag span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gradient-from);
+        box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
       }
 
       h1 {
-        font-size: 32px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <a href="index.html" class="logo">
-      <img
-        src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png"
-        alt="Aegix AI logo"
-      />
-      <div class="brand-copy">
-        <small>Aegix AI</small>
-        <strong>Autonomous Cyber Defense</strong>
-      </div>
-    </a>
-
-    <div class="header-actions">
-      <a href="account.html" class="btn btn-secondary">Back to Account</a>
-      <a href="index.html" class="btn btn-secondary">Back to Website</a>
-    </div>
-  </header>
-
-  <main class="upgrade-page">
-    <section class="panel hero-card">
-      <div class="tag"><span></span> Upgrade Plan</div>
-      <h1>Upgrade Your Protection Plan</h1>
-      <p class="hero-text">
-        Select a new Aegix AI package to update your protection level. Your
-        account will be updated instantly and a confirmation email will also be
-        sent to your registered email address.
-      </p>
-    </section>
-
-    <section class="panel">
-      <div class="section-title">
-        <h2>Current Plan</h2>
-        <p>Your currently active subscription details.</p>
-      </div>
-
-      <div class="current-plan" id="currentPlanBox">
-        Loading current plan...
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="section-title">
-        <h2>Choose New Plan</h2>
-        <p>Select the package you want to activate or upgrade to.</p>
-      </div>
-
-      <div class="plans">
-        <div class="card">
-          <div class="plan-badge">1 Month</div>
-          <h3>Starter Plan</h3>
-          <div class="price">$29</div>
-          <p>Ideal for short-term trials and basic protection for small setups.</p>
-          <button class="btn btn-primary plan-btn" data-interest="Starter Plan">
-            Choose Starter
-          </button>
-        </div>
-
-        <div class="card">
-          <div class="plan-badge">3 Months</div>
-          <h3>Professional Plan</h3>
-          <div class="price">$79</div>
-          <p>Best for growing businesses that need smarter and stronger protection.</p>
-          <button class="btn btn-primary plan-btn" data-interest="Professional Plan">
-            Choose Professional
-          </button>
-        </div>
-
-        <div class="card">
-          <div class="plan-badge">6 Months</div>
-          <h3>Enterprise Plan</h3>
-          <div class="price">$149</div>
-          <p>Advanced protection plan for long-term use and stronger support coverage.</p>
-          <button class="btn btn-primary plan-btn" data-interest="Enterprise Plan">
-            Choose Enterprise
-          </button>
-        </div>
-      </div>
-
-      <div class="status" id="upgradeStatus"></div>
-    </section>
-  </main>
-
-  <script>
-const API_BASE = "https://aegixai.rummaspringst.com/api/productpage";
-    function setStatus(message, type = "") {
-      const el = document.getElementById("upgradeStatus");
-      el.textContent = message;
-      el.className = "status";
-      if (type) el.classList.add(type);
-    }
-
-    function formatDate(dateString) {
-      if (!dateString) return "Not available";
-      const date = new Date(dateString);
-      if (Number.isNaN(date.getTime())) return dateString;
-      return date.toLocaleString();
-    }
-
-    function getToken() {
-      return localStorage.getItem("aegix_token") || "";
-    }
-
-    async function loadCurrentProfile() {
-      const token = getToken();
-
-      if (!token) {
-        window.location.href = "login.html";
-        return;
+        margin: 0 0 14px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 42px;
+        line-height: 1.15;
+        background: linear-gradient(
+          90deg,
+          var(--gradient-from),
+          var(--gradient-to)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+        position: relative;
+        z-index: 1;
       }
 
-      try {
-        const res = await fetch(`${API_BASE}/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      .hero-text {
+        color: var(--muted);
+        line-height: 1.85;
+        font-size: 15px;
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+        margin: 0 auto;
+      }
 
-        const data = await res.json();
+      .current-plan {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 22px;
+        padding: 22px;
+        line-height: 1.9;
+        color: #edf7ff;
+      }
 
-        if (!res.ok) {
-          localStorage.removeItem("aegix_token");
-          localStorage.removeItem("aegix_user");
+      .section-title {
+        margin-bottom: 18px;
+      }
+
+      .section-title h2 {
+        margin: 0 0 8px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 28px;
+        color: #fff;
+      }
+
+      .section-title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .plans {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+      }
+
+      .card {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 22px;
+        padding: 24px;
+        transition: var(--transition);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+      }
+
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.16);
+        border-color: rgba(0, 255, 255, 0.24);
+      }
+
+      .plan-badge {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #d9ffff;
+        background: rgba(0, 255, 255, 0.12);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        padding: 8px 10px;
+        border-radius: 999px;
+        margin-bottom: 12px;
+      }
+
+      .card h3 {
+        margin: 0 0 12px;
+        font-size: 24px;
+      }
+
+      .price {
+        font-family: "Orbitron", sans-serif;
+        font-size: 34px;
+        color: #fff;
+        margin-bottom: 12px;
+      }
+
+      .card p {
+        margin: 0 0 18px;
+        color: var(--muted);
+        line-height: 1.8;
+        font-size: 15px;
+      }
+
+      .status {
+        margin-top: 18px;
+        min-height: 18px;
+        font-size: 14px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .success {
+        color: var(--success);
+      }
+
+      .error {
+        color: var(--danger);
+      }
+
+      @media (max-width: 900px) {
+        .plans {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 700px) {
+        header {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .header-actions {
+          justify-content: center;
+        }
+
+        h1 {
+          font-size: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html" class="logo">
+        <img
+          src="ChatGPT Image Nov 27, 2025, 06_10_15 PM.png"
+          alt="Aegix AI logo"
+        />
+        <div class="brand-copy">
+          <small>Aegix AI</small>
+          <strong>Autonomous Cyber Defense</strong>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <a href="account.html" class="btn btn-secondary">Back to Account</a>
+        <a href="index.html" class="btn btn-secondary">Back to Website</a>
+      </div>
+    </header>
+
+    <main class="upgrade-page">
+      <section class="panel hero-card">
+        <div class="tag"><span></span> Upgrade Plan</div>
+        <h1>Upgrade Your Protection Plan</h1>
+        <p class="hero-text">
+          Select a new Aegix AI package to update your protection level. Your
+          account will be updated instantly and a confirmation email will also
+          be sent to your registered email address.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Current Plan</h2>
+          <p>Your currently active subscription details.</p>
+        </div>
+
+        <div class="current-plan" id="currentPlanBox">
+          Loading current plan...
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Choose New Plan</h2>
+          <p>Select the package you want to activate or upgrade to.</p>
+        </div>
+
+        <div class="plans">
+          <div class="card">
+            <div class="plan-badge">1 Month</div>
+            <h3>Starter Plan</h3>
+            <div class="price">$29</div>
+            <p>
+              Ideal for short-term trials and basic protection for small setups.
+            </p>
+            <button
+              class="btn btn-primary plan-btn"
+              data-interest="Starter Plan"
+            >
+              Choose Starter
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="plan-badge">3 Months</div>
+            <h3>Professional Plan</h3>
+            <div class="price">$79</div>
+            <p>
+              Best for growing businesses that need smarter and stronger
+              protection.
+            </p>
+            <button
+              class="btn btn-primary plan-btn"
+              data-interest="Professional Plan"
+            >
+              Choose Professional
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="plan-badge">6 Months</div>
+            <h3>Enterprise Plan</h3>
+            <div class="price">$149</div>
+            <p>
+              Advanced protection plan for long-term use and stronger support
+              coverage.
+            </p>
+            <button
+              class="btn btn-primary plan-btn"
+              data-interest="Enterprise Plan"
+            >
+              Choose Enterprise
+            </button>
+          </div>
+        </div>
+
+        <div class="status" id="upgradeStatus"></div>
+      </section>
+    </main>
+
+    <script>
+      const API_BASE = "/api/productpage";
+      function setStatus(message, type = "") {
+        const el = document.getElementById("upgradeStatus");
+        el.textContent = message;
+        el.className = "status";
+        if (type) el.classList.add(type);
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "Not available";
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return dateString;
+        return date.toLocaleString();
+      }
+
+      function getToken() {
+        return localStorage.getItem("aegix_token") || "";
+      }
+
+      async function loadCurrentProfile() {
+        const token = getToken();
+
+        if (!token) {
           window.location.href = "login.html";
           return;
         }
 
-        localStorage.setItem("aegix_user", JSON.stringify(data));
-
-        document.getElementById("currentPlanBox").innerHTML = `
-          <strong>Current Plan:</strong> ${data.selectedPlan || "No plan selected"}<br>
-          <strong>Price:</strong> ${data.selectedPlanPrice || "Not available"}<br>
-          <strong>Duration:</strong> ${data.selectedPlanDuration || "Not available"}<br>
-          <strong>Valid Till:</strong> ${formatDate(data.planValidTill)}
-        `;
-      } catch (err) {
-        setStatus("Failed to load current plan.", "error");
-      }
-    }
-
-    document.querySelectorAll(".plan-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const interest = btn.getAttribute("data-interest");
-        const token = getToken();
-
         try {
-          setStatus("Updating your plan...");
-
-          const res = await fetch(`${API_BASE}/select-plan`, {
-            method: "POST",
+          const res = await fetch(`${API_BASE}/profile`, {
             headers: {
-              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ interest }),
           });
 
           const data = await res.json();
 
           if (!res.ok) {
-            setStatus(data.msg || "Failed to update plan.", "error");
+            localStorage.removeItem("aegix_token");
+            localStorage.removeItem("aegix_user");
+            window.location.href = "login.html";
             return;
           }
 
-          if (data.user) {
-            localStorage.setItem("aegix_user", JSON.stringify(data.user));
-          }
+          localStorage.setItem("aegix_user", JSON.stringify(data));
 
-          setStatus("Plan updated successfully. Redirecting...", "success");
-
-          setTimeout(() => {
-            window.location.href = "account.html";
-          }, 1000);
+          document.getElementById("currentPlanBox").innerHTML = `
+          <strong>Current Plan:</strong> ${data.selectedPlan || "No plan selected"}<br>
+          <strong>Price:</strong> ${data.selectedPlanPrice || "Not available"}<br>
+          <strong>Duration:</strong> ${data.selectedPlanDuration || "Not available"}<br>
+          <strong>Valid Till:</strong> ${formatDate(data.planValidTill)}
+        `;
         } catch (err) {
-          setStatus("Server error while updating plan.", "error");
+          setStatus("Failed to load current plan.", "error");
         }
-      });
-    });
+      }
 
-    loadCurrentProfile();
-  </script>
-</body>
+      document.querySelectorAll(".plan-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const interest = btn.getAttribute("data-interest");
+          const token = getToken();
+
+          try {
+            setStatus("Updating your plan...");
+
+            const res = await fetch(`${API_BASE}/select-plan`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ interest }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              setStatus(data.msg || "Failed to update plan.", "error");
+              return;
+            }
+
+            if (data.user) {
+              localStorage.setItem("aegix_user", JSON.stringify(data.user));
+            }
+
+            setStatus("Plan updated successfully. Redirecting...", "success");
+
+            setTimeout(() => {
+              window.location.href = "account.html";
+            }, 1000);
+          } catch (err) {
+            setStatus("Server error while updating plan.", "error");
+          }
+        });
+      });
+
+      loadCurrentProfile();
+    </script>
+  </body>
 </html>

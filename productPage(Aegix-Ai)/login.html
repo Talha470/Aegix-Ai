@@ -917,7 +917,7 @@
     </footer>
 
     <script>
-const API_BASE = "https://aegixai.rummaspringst.com/api/productpage";
+      const API_BASE = "/api/productpage";
       const showLogin = document.getElementById("showLogin");
       const showSignup = document.getElementById("showSignup");
       const loginPanel = document.getElementById("loginPanel");
@@ -1029,26 +1029,26 @@ const API_BASE = "https://aegixai.rummaspringst.com/api/productpage";
       }
 
       async function saveSelectedPlanAfterAuth(token) {
-  const selectedPlan = localStorage.getItem("aegix_selected_plan");
-  if (!selectedPlan || !token) return;
+        const selectedPlan = localStorage.getItem("aegix_selected_plan");
+        if (!selectedPlan || !token) return;
 
-  try {
-    await fetch(`${API_BASE}/select-plan`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        interest: selectedPlan
-      })
-    });
+        try {
+          await fetch(`${API_BASE}/select-plan`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              interest: selectedPlan,
+            }),
+          });
 
-    localStorage.removeItem("aegix_selected_plan");
-  } catch (err) {
-    console.error("Failed to save selected plan after auth");
-  }
-}
+          localStorage.removeItem("aegix_selected_plan");
+        } catch (err) {
+          console.error("Failed to save selected plan after auth");
+        }
+      }
 
       document
         .getElementById("signupForm")
@@ -1152,7 +1152,7 @@ const API_BASE = "https://aegixai.rummaspringst.com/api/productpage";
 
             if (data.token) {
               localStorage.setItem("aegix_token", data.token);
-                await saveSelectedPlanAfterAuth(data.token);
+              await saveSelectedPlanAfterAuth(data.token);
             }
 
             if (data.user) {
@@ -1232,7 +1232,7 @@ const API_BASE = "https://aegixai.rummaspringst.com/api/productpage";
 
             if (data.token) {
               localStorage.setItem("aegix_token", data.token);
-                await saveSelectedPlanAfterAuth(data.token);
+              await saveSelectedPlanAfterAuth(data.token);
             }
 
             if (data.user) {
