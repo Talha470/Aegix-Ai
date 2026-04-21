@@ -166,6 +166,7 @@ const isBlockedIP = async (ip) => {
 
   return true;
 };
+const rateLimitForIP = {}; // Object to track requests by IP
 
 // -------------------- EXPORTS --------------------
 
@@ -295,141 +296,132 @@ validateNewPassword:  (req, res, next) => {
     next();
   },
 
-  detectAttack: async (req, res, next) => {
-    try {
-      if (isSafeRoute(req.originalUrl)) {
-        await updateRouteStats(req.originalUrl);
-        return next();
-      }
-
-      const ip = getClientIP(req);
-      const userAgent = getUserAgent(req);
-
-      const blocked = await isBlockedIP(ip);
-      if (blocked) {
-        await Log.create({
-          ip,
-          endpoint: req.originalUrl,
-          route: req.originalUrl,
-          method: req.method,
-          attackType: "BLOCKED_IP",
-          severity: "CRITICAL",
-          score: 25,
-          status: "BLOCKED",
-          payload: "",
-          userAgent,
-          message: "Request blocked because IP is temporarily blocked",
-        });
-
-        await updateRouteStats(req.originalUrl, "BLOCKED_IP");
-
-        return res.status(403).json({
-          msg: "IP temporarily blocked",
-          severity: "CRITICAL",
-        });
-      }
-
-      const requestData = {
-        body: req.body,
-        query: req.query,
-        params: req.params,
-        url: req.originalUrl,
-      };
-
-      let attackType = null;
-
-      if (detectPattern(requestData, sqlPatterns)) {
-        attackType = "SQL_INJECTION";
-      } else if (detectPattern(requestData, xssPatterns)) {
-        attackType = "XSS";
-      } else if (detectPattern(requestData, pathTraversalPatterns)) {
-        attackType = "PATH_TRAVERSAL";
-      } else if (detectPattern(requestData, suspiciousPatterns)) {
-        attackType = "SUSPICIOUS_REQUEST";
-      }
-
-      if (!attackType) {
-        await updateRouteStats(req.originalUrl);
-        return next();
-      }
-
-      const recentWindow = getTimeWindowStart(10);
-      const recentCount = await Log.countDocuments({
-        ip,
-        attackType,
-        createdAt: { $gte: recentWindow },
-      });
-
-      const baseScore = getBaseScore(attackType);
-      const repeatedBonus = recentCount >= 5 ? 10 : recentCount >= 3 ? 5 : recentCount >= 1 ? 2 : 0;
-      const totalScore = baseScore + repeatedBonus;
-      const severity = getSeverityFromScore(totalScore);
-
-      let blockedUntil = null;
-
-      if (severity === "CRITICAL") {
-        blockedUntil = new Date(Date.now() + 10 * 60 * 1000);
-      }
-
-      await Log.create({
-        ip,
-        endpoint: req.originalUrl,
-        route: req.originalUrl,
-        method: req.method,
-        attackType,
-        severity,
-        score: totalScore,
-        status: blockedUntil ? "BLOCKED" : "FLAGGED",
-        payload: JSON.stringify(requestData),
-        userAgent,
-        message: `${attackType} detected`,
-      });
-
-      await updateRouteStats(req.originalUrl, attackType);
-
-      let alert = await Alert.findOne({ ip, type: attackType });
-
-      if (!alert) {
-        alert = await Alert.create({
-          ip,
-          type: attackType,
-          severity,
-          score: totalScore,
-          count: 1,
-          message: `${attackType} detected from IP ${ip}`,
-          lastSeen: new Date(),
-          blockedUntil,
-        });
-      } else {
-        alert.count += 1;
-        alert.lastSeen = new Date();
-        alert.score = totalScore;
-        alert.severity = severity;
-        alert.message = `${attackType} detected from IP ${ip}`;
-        if (blockedUntil) {
-          alert.blockedUntil = blockedUntil;
-        }
-        await alert.save();
-      }
-
-      await updateSuspiciousIP(
-        ip,
-        req.originalUrl,
-        attackType,
-        severity,
-        userAgent,
-        blockedUntil
-      );
-
-      return res.status(403).json({
-        msg: "Malicious request detected",
-        attackType,
-        severity,
-        score: totalScore,
-        blocked: !!blockedUntil,
-      });
-    } catch (err) {
-      next(err);
+  detectAttack = async (req, res, next) => {
+  try {
+    if (isSafeRoute(req.originalUrl)) {
+      await updateRouteStats(req.originalUrl);
+      return next();
     }
-  },
+
+    const ip = getClientIP(req);
+
+    // Rate limit tracking per IP
+    if (!rateLimitForIP[ip]) {
+      rateLimitForIP[ip] = { count: 1, lastRequest: Date.now() };
+    } else {
+      const timeDiff = Date.now() - rateLimitForIP[ip].lastRequest;
+      if (timeDiff < 60 * 1000) { // 1 minute window
+        rateLimitForIP[ip].count += 1;
+      } else {
+        rateLimitForIP[ip].count = 1;
+      }
+
+      rateLimitForIP[ip].lastRequest = Date.now();
+
+      if (rateLimitForIP[ip].count > 20) { // Block after 20 requests within 1 minute
+        await updateSuspiciousIP(ip, req.originalUrl, "TOO_MANY_REQUESTS", "CRITICAL", getUserAgent(req), new Date(Date.now() + 10 * 60 * 1000)); // Block for 10 minutes
+        return res.status(429).json({ msg: "Too many requests from this IP, please try again later." });
+      }
+    }
+
+    // Check if the IP is blocked
+    const blocked = await isBlockedIP(ip);
+    if (blocked) {
+      return res.status(403).json({
+        msg: "IP temporarily blocked",
+        severity: "CRITICAL",
+      });
+    }
+
+    const requestData = {
+      body: req.body,
+      query: req.query,
+      params: req.params,
+      url: req.originalUrl,
+    };
+
+    // Detect attack patterns
+    let attackType = null;
+    if (detectPattern(requestData, sqlPatterns)) attackType = "SQL_INJECTION";
+    else if (detectPattern(requestData, xssPatterns)) attackType = "XSS";
+    else if (detectPattern(requestData, pathTraversalPatterns)) attackType = "PATH_TRAVERSAL";
+    else if (detectPattern(requestData, suspiciousPatterns)) attackType = "SUSPICIOUS_REQUEST";
+
+    if (!attackType) {
+      await updateRouteStats(req.originalUrl);
+      return next();
+    }
+
+    const recentWindow = getTimeWindowStart(10);
+    const recentCount = await Log.countDocuments({
+      ip,
+      attackType,
+      createdAt: { $gte: recentWindow },
+    });
+
+    const baseScore = getBaseScore(attackType);
+    const repeatedBonus = recentCount >= 5 ? 10 : recentCount >= 3 ? 5 : recentCount >= 1 ? 2 : 0;
+    const totalScore = baseScore + repeatedBonus;
+    const severity = getSeverityFromScore(totalScore);
+
+    let blockedUntil = null;
+
+    if (severity === "CRITICAL") {
+      blockedUntil = new Date(Date.now() + 10 * 60 * 1000); // Block for 10 minutes if attack severity is critical
+    }
+
+    await Log.create({
+      ip,
+      endpoint: req.originalUrl,
+      route: req.originalUrl,
+      method: req.method,
+      attackType,
+      severity,
+      score: totalScore,
+      status: blockedUntil ? "BLOCKED" : "FLAGGED",
+      payload: JSON.stringify(requestData),
+      userAgent: getUserAgent(req),
+      message: `${attackType} detected`,
+    });
+
+    await updateRouteStats(req.originalUrl, attackType);
+
+    let alert = await Alert.findOne({ ip, type: attackType });
+
+    if (!alert) {
+      alert = await Alert.create({
+        ip,
+        type: attackType,
+        severity,
+        score: totalScore,
+        count: 1,
+        message: `${attackType} detected from IP ${ip}`,
+        lastSeen: new Date(),
+        blockedUntil,
+      });
+    } else {
+      alert.count += 1;
+      alert.lastSeen = new Date();
+      alert.score = totalScore;
+      alert.severity = severity;
+      alert.message = `${attackType} detected from IP ${ip}`;
+      if (blockedUntil) {
+        alert.blockedUntil = blockedUntil;
+      }
+      await alert.save();
+    }
+
+    await updateSuspiciousIP(ip, req.originalUrl, attackType, severity, getUserAgent(req), blockedUntil);
+
+    return res.status(403).json({
+      msg: "Malicious request detected",
+      attackType,
+      severity,
+      score: totalScore,
+      blocked: !!blockedUntil,
+    });
+  } catch (err) {
+    next(err);
+  }
+},
 };
