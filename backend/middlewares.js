@@ -166,8 +166,7 @@ const isBlockedIP = async (ip) => {
 
   return true;
 };
-const rateLimitForIP = {}; // Object to track requests by IP
-
+const rateLimitForIP = {};
 // -------------------- EXPORTS --------------------
 
 module.exports = {
@@ -296,7 +295,7 @@ validateNewPassword:  (req, res, next) => {
     next();
   },
 
-  detectAttack = async (req, res, next) => {
+  detectAttack : async (req, res, next) => {
   try {
     if (isSafeRoute(req.originalUrl)) {
       await updateRouteStats(req.originalUrl);
