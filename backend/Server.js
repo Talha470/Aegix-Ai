@@ -69,6 +69,9 @@ app.use("/api/dashboard", generalLimiter, require("./routes/dashboard"));
 app.use("/api/users", generalLimiter, detectAttack, require("./routes/users"));
 app.use("/api/productpage", authLimiterforproductpage, detectAttack, require("./routes/productpage"));
 app.use("/api/server", generalLimiter, require("./routes/serverLogs"));
+const reportsRouter = require('./routes/reports');
+app.use('/api/reports', reportsRouter);
+
 app.use((req, res, next) => {
   next(new expressError(404, "Page not found!"));
 });
@@ -82,6 +85,7 @@ app.use((err, req, res, next) => {
     message,
   });
 });
+
 
 app.listen(process.env.PORT, () => {
   console.log("Server started on port " + process.env.PORT);

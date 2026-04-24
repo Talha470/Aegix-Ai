@@ -1,0 +1,34 @@
+
+const express = require('express');
+const router = express.Router();
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+
+router.get('/generate', async (req, res) => {
+  try {
+    const doc = new PDFDocument();
+    const filename = `AEGIX_Report_${Date.now()}.pdf`;
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    
+    doc.pipe(res);
+    
+    // Title
+    doc.fontSize(25).text('AEGIX AI Security Report', 100, 50);
+    doc.moveDown();
+    
+    // Stats
+    const cowrie = fs.readFileSync('/host-logs/cowrie/cowrie.json', 'utf8')
+      .split('\n').filter(l => l.trim()).length;
+    
+    doc.fontSize(14).text(`Total Attacks: ${cowrie}`, 100, 150);
+    doc.text(`Report Generated: ${new Date().toLocaleString()}`, 100, 170);
+    
+    doc.end();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;
