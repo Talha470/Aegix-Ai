@@ -233,15 +233,6 @@ export default function Overview() {
           </div>
         </div>
 
-	<div style={{ background: 'var(--card-strong)', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: 24 }}>
-          <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 14, color: 'var(--text)', marginBottom: 16 }}>🌍 Global Attack Heatmap</h3>
-          <AttackHeatmap attacks={[
-            { lat: 39.9042, lng: 116.4074 }, // Beijing
-            { lat: 55.7558, lng: 37.6173 },  // Moscow
-            { lat: 40.7128, lng: -74.0060 }, // New York
-            { lat: 51.5074, lng: -0.1278 },  // London
-          ]} />
-        </div>
         <div style={{ background: 'var(--card-strong)', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: 24 }}>
           <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 14, color: 'var(--text)', marginBottom: 16 }}>Recent Attack Logs</h3>
           <div style={{ overflowX: 'auto' }}>

@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.15.2",
     "lucide-react": "^1.8.0",
+    "prop-types": "^15.8.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-is": "^19.2.5",
