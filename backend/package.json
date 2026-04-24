@@ -22,7 +22,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "morgan": "^1.10.1",
-    "nodemailer": "^8.0.5"
+    "nodemailer": "^8.0.5",
+    "prom-client": "^15.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

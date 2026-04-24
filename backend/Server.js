@@ -1,6 +1,5 @@
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+require("dotenv").config();
+
 
 const express = require("express");
 const cors = require("cors");
@@ -16,7 +15,7 @@ const app = express();
 
 // local testing ke liye trust proxy off rakho
 // production me nginx ke piche ho to 1 kar dena
-// app.set("trust proxy", 1);
+app.set("trust proxy", 1);
 
 connectDB();
 
@@ -34,7 +33,7 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -44,7 +43,7 @@ const generalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -53,7 +52,7 @@ const authLimiter = rateLimit({
 });
 const authLimiterforproductpage = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30,
+  max: 50,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -66,10 +65,10 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authLimiter, detectAttack, require("./routes/auth"));
-app.use("/api/dashboard", generalLimiter, detectAttack, require("./routes/dashboard"));
+app.use("/api/dashboard", generalLimiter, require("./routes/dashboard"));
 app.use("/api/users", generalLimiter, detectAttack, require("./routes/users"));
 app.use("/api/productpage", authLimiterforproductpage, detectAttack, require("./routes/productpage"));
-
+app.use("/api/server", generalLimiter, require("./routes/serverLogs"));
 app.use((req, res, next) => {
   next(new expressError(404, "Page not found!"));
 });

@@ -318,7 +318,7 @@ validateNewPassword:  (req, res, next) => {
       rateLimitForIP[ip].lastRequest = Date.now();
 
       if (rateLimitForIP[ip].count > 20) { // Block after 20 requests within 1 minute
-        await updateSuspiciousIP(ip, req.originalUrl, "TOO_MANY_REQUESTS", "CRITICAL", getUserAgent(req), new Date(Date.now() + 10 * 60 * 1000)); // Block for 10 minutes
+        await updateSuspiciousIP(ip, req.originalUrl, "TOO_MANY_REQUESTS", "CRITICAL", getUserAgent(req), new Date(Date.now() + 1 * 10 * 100)); // Block for 10 minutes
         return res.status(429).json({ msg: "Too many requests from this IP, please try again later." });
       }
     }
