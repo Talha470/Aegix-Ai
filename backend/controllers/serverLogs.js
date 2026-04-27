@@ -14,33 +14,37 @@ function readLastLines(filePath, count) {
 
 module.exports.modsecLogs = async (req, res) => {
   try {
-    const lines = readLastLines("/host-logs/nginx/modsec_audit.log", 200);
+    const fs = require('fs');
+    const data = fs.readFileSync('/host-logs/nginx/error.log', 'utf8');
+    const lines = data.split('\n').slice(-500);
     const entries = [];
-    const raw = lines.join("\n");
-    const blocks = raw.split(/---[a-zA-Z0-9]+---A--/).filter(b => b.trim());
-
-    for (const block of blocks.slice(-30)) {
-      const ipMatch = block.match(/(\d+\.\d+\.\d+\.\d+)/);
-      const dateMatch = block.match(/\[(\d{2}\/\w+\/\d{4}[^\]]+)\]/);
-      const uriMatch = block.match(/(GET|POST|PUT|DELETE)\s+(\S+)/);
-
+    
+    for (const line of lines) {
+      if (!line.includes('ModSecurity')) continue;
+      
+      const ipMatch = line.match(/\[client ([^\]]+)\]/);
+      const msgMatch = line.match(/\[msg "([^"]+)"\]/);
+      const uriMatch = line.match(/\[uri "([^"]+)"\]/);
+      const timeMatch = line.match(/^(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2})/);
+      const methodMatch = line.match(/request: "(GET|POST|PUT|DELETE)\s+(\S+)/);
+      
       if (ipMatch) {
         entries.push({
           ip: ipMatch[1],
-          time: dateMatch ? dateMatch[1] : "Unknown",
-          method: uriMatch ? uriMatch[1] : "GET",
-          uri: uriMatch ? uriMatch[2] : "/",
+          time: timeMatch ? timeMatch[1] : "Unknown",
+          method: methodMatch ? methodMatch[1] : "GET",
+          uri: uriMatch ? uriMatch[1] : (methodMatch ? methodMatch[2] : "/"),
+          message: msgMatch ? msgMatch[1] : "ModSecurity Block",
           source: "ModSecurity"
         });
       }
     }
-
-    res.json(entries.reverse());
+    
+    res.json(entries.reverse().slice(0, 50));
   } catch (err) {
     res.json([]);
   }
 };
-
 module.exports.fail2banStatus = async (req, res) => {
   try {
     const lines = readLastLines("/host-logs/fail2ban.log", 200);

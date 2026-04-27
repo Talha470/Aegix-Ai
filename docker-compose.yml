@@ -1,5 +1,5 @@
-version: "3.9"
 
+version: "3.9"
 services:
   mongo:
     image: mongo:7
@@ -9,7 +9,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-
   backend:
     build: ./backend
     container_name: aegix-backend
@@ -21,7 +20,7 @@ services:
     environment:
       PORT: 8080
       MONGO_URI: mongodb://mongo:27017/aegixdb
-      JWT_SECRET: 034673
+      JWT_SECRET: 05c23e05348bf2ba4102126909dc6e5a3052a94612f99c84e24fd39af08c7dd3
       NODE_ENV: development
     volumes:
       - ./backend:/app
@@ -31,7 +30,6 @@ services:
       - /var/log/fail2ban.log:/host-logs/fail2ban.log:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/talhaVM/honeypots/cowrie/logs:/host-logs/cowrie:ro
-
   frontend:
     build: ./frontend
     container_name: aegix-frontend
@@ -43,6 +41,5 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-
 volumes:
   mongo_data:

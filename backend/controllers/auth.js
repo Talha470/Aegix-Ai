@@ -35,18 +35,44 @@ module.exports.signup = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-
+    const { email, password, twoFactorCode } = req.body;
+    
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: "No user found" });
     }
-
+    
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(400).json({ msg: "Wrong password" });
     }
-
+    
+    // CHECK IF 2FA IS ENABLED
+    if (user.twoFactorEnabled) {
+      // If 2FA code not provided, ask for it
+      if (!twoFactorCode) {  // FIXED HERE
+        return res.status(200).json({
+          msg: "2FA required",
+          requires2FA: true,
+          userId: user._id
+        });
+      }
+      
+      // Verify 2FA code
+      const speakeasy = require("speakeasy");
+      const verified = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: "base32",
+        token: twoFactorCode,
+        window: 2
+      });
+      
+      if (!verified) {
+        return res.status(400).json({ msg: "Invalid 2FA code" });
+      }
+    }
+    
+    // Generate JWT token
     const token = jwt.sign(
       {
         id: user._id,
@@ -56,7 +82,7 @@ module.exports.login = async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
+    
     res.json({
       msg: "Login success",
       token,
@@ -65,6 +91,7 @@ module.exports.login = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        twoFactorEnabled: user.twoFactorEnabled
       },
     });
   } catch (err) {

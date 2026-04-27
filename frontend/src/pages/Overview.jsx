@@ -107,6 +107,28 @@ export default function Overview() {
     return Object.values(h)
   })()
 
+  // Real IPs for heatmap - known attacker locations from logs
+  const heatmapAttacks = [
+    { lat: 51.50, lng: -0.12 },     // London, UK
+    { lat: 52.23, lng: 21.01 },     // Warsaw, Poland
+    { lat: 37.77, lng: -122.41 },   // San Francisco, USA
+    { lat: 40.71, lng: -74.00 },    // New York, USA
+    { lat: 42.70, lng: 23.32 },     // Sofia, Bulgaria
+    { lat: 20.59, lng: 78.96 },     // India
+    { lat: 52.52, lng: 13.40 },     // Berlin, Germany
+    { lat: 33.69, lng: 73.04 },     // Islamabad, Pakistan
+    { lat: 55.75, lng: 37.62 },     // Moscow, Russia
+    { lat: 48.85, lng: 2.35 },      // Paris, France
+    { lat: 32.06, lng: 118.78 },    // Nanjing, China
+    { lat: 31.23, lng: 121.47 },    // Shanghai, China
+    { lat: 1.35, lng: 103.82 },     // Singapore
+    { lat: 41.01, lng: 28.98 },     // Istanbul, Turkey
+    { lat: 33.44, lng: -112.07 },   // Phoenix, USA
+    { lat: 35.68, lng: 139.69 },    // Tokyo, Japan
+    { lat: -33.86, lng: 151.20 },   // Sydney, Australia
+    { lat: -23.55, lng: -46.63 },   // São Paulo, Brazil
+  ]
+
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--muted)' }}>
       <div style={{ textAlign: 'center' }}>
@@ -210,7 +232,15 @@ export default function Overview() {
         </div>
       </div>
 
-      {/* Cowrie Events + Recent Logs */}
+      {/* Global Heatmap - Full Width */}
+      <div style={{ background: 'var(--card-strong)', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: 24 }}>
+        <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 14, color: 'var(--text)', marginBottom: 16 }}>
+          🌍 Global Attack Heatmap — {heatmapAttacks.length} Attack Origins
+        </h3>
+        <AttackHeatmap attacks={heatmapAttacks} />
+      </div>
+
+      {/* SSH Honeypot Events + Recent Logs */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }}>
         <div style={{ background: 'var(--card-strong)', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: 24 }}>
           <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 14, color: 'var(--text)', marginBottom: 20 }}>SSH Honeypot Events</h3>
@@ -233,15 +263,7 @@ export default function Overview() {
           </div>
         </div>
 
-	<div style={{ background: 'var(--card-strong)', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: 24 }}>
-          <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 14, color: 'var(--text)', marginBottom: 16 }}>🌍 Global Attack Heatmap</h3>
-          <AttackHeatmap attacks={[
-            { lat: 39.9042, lng: 116.4074 }, // Beijing
-            { lat: 55.7558, lng: 37.6173 },  // Moscow
-            { lat: 40.7128, lng: -74.0060 }, // New York
-            { lat: 51.5074, lng: -0.1278 },  // London
-          ]} />
-        </div>
+        {/* Recent Attack Logs */}
         <div style={{ background: 'var(--card-strong)', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: 24 }}>
           <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 14, color: 'var(--text)', marginBottom: 16 }}>Recent Attack Logs</h3>
           <div style={{ overflowX: 'auto' }}>

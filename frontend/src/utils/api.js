@@ -1,24 +1,25 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
 })
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('aegix_token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 })
 
+// ADD THIS INTERCEPTOR
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('aegix_token')
-      localStorage.removeItem('aegix_user')
-      window.location.href = '/login'
+  (response) => response,
+  (error) => {
+    if (error.response?.data?.requires2FASetup) {
+      window.location.href = '/dashboard/settings?setup2fa=true'
     }
-    return Promise.reject(err)
+    return Promise.reject(error)
   }
 )
 

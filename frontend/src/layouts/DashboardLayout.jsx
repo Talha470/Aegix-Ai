@@ -1,24 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Shield, AlertTriangle,
-  Globe, Terminal, Users, LogOut, Menu, X, Activity
+  Globe, Terminal, Users, LogOut, Menu, X, Activity, Clock, Brain, Settings
 } from 'lucide-react'
-
 const navItems = [
   { path: '/dashboard', icon: <LayoutDashboard size={18} />, label: 'Overview' },
+  { path: '/dashboard/ml', icon: <Brain size={18} />, label: 'ML Detection' },
   { path: '/dashboard/logs', icon: <Shield size={18} />, label: 'Attack Logs' },
   { path: '/dashboard/alerts', icon: <AlertTriangle size={18} />, label: 'Alerts' },
   { path: '/dashboard/ips', icon: <Globe size={18} />, label: 'Suspicious IPs' },
   { path: '/dashboard/honeypot', icon: <Terminal size={18} />, label: 'Honeypot' },
   { path: '/dashboard/users', icon: <Users size={18} />, label: 'Users' },
+  { path: '/dashboard/settings', icon: <Settings size={18} />, label: 'Settings' },
 ]
 
 export default function DashboardLayout({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [serverTime, setServerTime] = useState(new Date().toUTCString())
   const user = JSON.parse(localStorage.getItem('aegix_user') || '{}')
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setServerTime(new Date().toUTCString())
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   function handleLogout() {
     localStorage.removeItem('aegix_token')
@@ -256,6 +265,28 @@ export default function DashboardLayout({ children }) {
               }} />
               <span style={{ fontSize: '11px', color: '#44d17a', fontWeight: '700', letterSpacing: '0.08em' }}>
                 LIVE
+              </span>
+            </div>
+
+            {/* Server Time */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '7px 14px',
+              borderRadius: '999px',
+              background: 'rgba(0,240,255,0.08)',
+              border: '1px solid rgba(0,240,255,0.2)'
+            }}>
+              <Clock size={14} color="#00f0ff" />
+              <span style={{ 
+                fontSize: '11px', 
+                color: '#00f0ff', 
+                fontWeight: '600', 
+                fontFamily: 'monospace',
+                letterSpacing: '0.03em'
+              }}>
+                {serverTime}
               </span>
             </div>
           </div>

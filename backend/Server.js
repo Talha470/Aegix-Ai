@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -9,7 +8,7 @@ const rateLimit = require("express-rate-limit");
 
 const expressError = require("./utils/expressError");
 const connectDB = require("./init/connect");
-const { detectAttack } = require("./middlewares");
+const { detectAttack, protect, require2FA } = require("./middlewares");
 
 const app = express();
 
@@ -64,13 +63,15 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "OK" });
 });
 
+app.use("/api/ml", generalLimiter, require("./routes/ml"));
 app.use("/api/auth", authLimiter, detectAttack, require("./routes/auth"));
-app.use("/api/dashboard", generalLimiter, require("./routes/dashboard"));
-app.use("/api/users", generalLimiter, detectAttack, require("./routes/users"));
+app.use("/api/dashboard", protect, require2FA, generalLimiter, require("./routes/dashboard"));
+app.use("/api/users", protect, require2FA, generalLimiter, detectAttack, require("./routes/users"));
 app.use("/api/productpage", authLimiterforproductpage, detectAttack, require("./routes/productpage"));
 app.use("/api/server", generalLimiter, require("./routes/serverLogs"));
 const reportsRouter = require('./routes/reports');
 app.use('/api/reports', reportsRouter);
+app.use("/api/2fa", protect, generalLimiter, require("./routes/twoFactor"));
 
 app.use((req, res, next) => {
   next(new expressError(404, "Page not found!"));

@@ -1,3 +1,4 @@
+const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const Log = require("./models/logs");
 const Alert = require("./models/alerts");
@@ -171,6 +172,29 @@ const rateLimitForIP = {};
 
 module.exports = {
 
+  require2FA : async (req, res, next) => {
+  try {
+    const User = require("./models/users");
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    
+    // If 2FA not enabled, require setup
+    if (!user.twoFactorEnabled) {
+      return res.status(403).json({ 
+        msg: "2FA setup required",
+        requires2FASetup: true 
+      });
+    }
+    
+    next();
+  } catch (err) {
+    return res.status(500).json({ msg: "Server error" });
+  }
+},
+
   validateOTP: (req, res, next) => {
   const { otp } = req.body;
 
@@ -228,16 +252,18 @@ validateNewPassword:  (req, res, next) => {
   },
 
   validateLogin: (req, res, next) => {
-    const { error } = loginSchema.validate(req.body);
-
-    if (error) {
-      return res.status(400).json({
-        msg: error.details[0].message,
-      });
-    }
-
-    next();
-  },
+const schema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+    twoFactorCode: Joi.string().optional().allow('', null)  // ADD THIS LINE
+  });
+  
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ msg: error.details[0].message });
+  }
+  next();
+},
 
   validateProductSignup: (req, res, next) => {
     const { error } = productSignupSchema.validate(req.body);
@@ -421,6 +447,27 @@ validateNewPassword:  (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+},
+protect : async (req, res, next) => {
+  try {
+    let token;
+    
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    
+    if (!token) {
+      return res.status(401).json({ msg: "Not authorized, no token" });
+    }
+    
+    const jwt = require("jsonwebtoken");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.status(401).json({ msg: "Not authorized, token failed" });
   }
 },
 };
