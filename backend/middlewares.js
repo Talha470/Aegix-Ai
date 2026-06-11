@@ -438,6 +438,17 @@ const schema = Joi.object({
 
     await updateSuspiciousIP(ip, req.originalUrl, attackType, severity, getUserAgent(req), blockedUntil);
 
+    // Emit real-time alert via Socket.io
+    if (global.aegixIO) {
+      global.aegixIO.to('alerts').emit('new_alert', {
+        ip, type: attackType, severity, score: totalScore,
+        message: `${attackType} detected from IP ${ip}`,
+        endpoint: req.originalUrl,
+        blocked: !!blockedUntil,
+        ts: new Date().toISOString(),
+      });
+    }
+
     return res.status(403).json({
       msg: "Malicious request detected",
       attackType,

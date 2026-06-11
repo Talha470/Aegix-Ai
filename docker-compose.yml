@@ -21,7 +21,10 @@ services:
       PORT: 8080
       MONGO_URI: mongodb://mongo:27017/aegixdb
       JWT_SECRET: 05c23e05348bf2ba4102126909dc6e5a3052a94612f99c84e24fd39af08c7dd3
-      NODE_ENV: development
+      NODE_ENV: production
+      # Threat Intelligence API Keys (replace with real keys)
+      ABUSEIPDB_KEY: YOUR_ABUSEIPDB_KEY_HERE
+      OTX_API_KEY: YOUR_OTX_API_KEY_HERE
     volumes:
       - ./backend:/app
       - /app/node_modules
