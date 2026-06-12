@@ -23,8 +23,8 @@ services:
       JWT_SECRET: 05c23e05348bf2ba4102126909dc6e5a3052a94612f99c84e24fd39af08c7dd3
       NODE_ENV: production
       # Threat Intelligence API Keys (replace with real keys)
-      ABUSEIPDB_KEY: YOUR_ABUSEIPDB_KEY_HERE
-      OTX_API_KEY: YOUR_OTX_API_KEY_HERE
+      ABUSEIPDB_KEY: 10aea388d08dc2faaed9db0c01658e4c5463fdf8931b6c0dc2c083fd4b3751f31af8526d2b1e23b6
+      OTX_API_KEY: d5bbd3de1c405c0e8274ee5faeaa797a080e367c8de0bfa3b4cfc66147b51af2
     volumes:
       - ./backend:/app
       - /app/node_modules
