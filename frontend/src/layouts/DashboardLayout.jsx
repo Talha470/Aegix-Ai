@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Shield, AlertTriangle,
   Globe, Terminal, Users, LogOut, Menu, X, Activity, Clock,
-  Brain, Settings, ShieldOff, Zap, RefreshCw, ShieldCheck, Award, Radio
+  Brain, Settings, ShieldOff, Zap, RefreshCw, ShieldCheck, Award, Radio, FileText
 } from 'lucide-react'
 
 const NAV_SECTIONS = [
@@ -14,7 +14,8 @@ const NAV_SECTIONS = [
       { path: '/dashboard/logs',        icon: <Shield size={16} />,          label: 'Attack Logs' },
       { path: '/dashboard/alerts',      icon: <AlertTriangle size={16} />,   label: 'Alerts' },
       { path: '/dashboard/ips',         icon: <Globe size={16} />,           label: 'Suspicious IPs' },
-      { path: '/dashboard/honeypot',    icon: <Terminal size={16} />,        label: 'Honeypot' },
+      { path: '/dashboard/honeypot',       icon: <Terminal size={16} />,        label: 'Honeypot' },
+      { path: '/dashboard/internal-logs',  icon: <FileText size={16} />,        label: 'Internal Logs' },
     ]
   },
   {

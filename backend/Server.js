@@ -89,7 +89,8 @@ app.use("/api/blocked-ips",  protect, require2FA, generalLimiter, require("./rou
 app.use("/api/morpheus",     generalLimiter, require("./routes/morpheus"));
 app.use("/api/helix",        generalLimiter, require("./routes/helix"));
 app.use("/api/compliance",   generalLimiter, require("./routes/compliance"));
-app.use("/api/threat-intel", generalLimiter, require("./routes/threatIntel"));
+app.use("/api/threat-intel",   generalLimiter, require("./routes/threatIntel"));
+app.use("/api/internal-logs", generalLimiter, require("./routes/internalLogs"));
 
 // ── Error Handlers ────────────────────────────────────────────────────────────
 app.use((req, res, next) => next(new expressError(404, "Page not found!")));

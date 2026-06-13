@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { getSocket } from '../utils/socket'
-import { X, Zap, AlertTriangle, ShieldAlert } from 'lucide-react'
+import { X, Zap, AlertTriangle, ShieldAlert, ShieldOff } from 'lucide-react'
 
 const SEV_CONFIG = {
-  CRITICAL: { color: '#ff3b3b', bg: 'rgba(255,59,59,0.12)', icon: <Zap size={14} /> },
-  HIGH:     { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', icon: <AlertTriangle size={14} /> },
-  MEDIUM:   { color: '#00f0ff', bg: 'rgba(0,240,255,0.10)', icon: <ShieldAlert size={14} /> },
-  LOW:      { color: '#44d17a', bg: 'rgba(68,209,122,0.10)', icon: <ShieldAlert size={14} /> },
+  CRITICAL:   { color: '#ff3b3b', icon: <Zap size={14} /> },
+  HIGH:       { color: '#f59e0b', icon: <AlertTriangle size={14} /> },
+  MEDIUM:     { color: '#00f0ff', icon: <ShieldAlert size={14} /> },
+  LOW:        { color: '#44d17a', icon: <ShieldAlert size={14} /> },
+  IP_BLOCKED: { color: '#a78bfa', icon: <ShieldOff size={14} /> },
 }
 
 export default function AlertToast() {
@@ -19,14 +20,21 @@ export default function AlertToast() {
     const socket = getSocket()
     socket.emit('authenticate', token)
 
-    socket.on('new_alert', (alert) => {
+    function addAlert(alert) {
       const id = Date.now() + Math.random()
       setAlerts(prev => [...prev.slice(-4), { ...alert, id }])
-      // Auto-dismiss after 8s
       setTimeout(() => setAlerts(prev => prev.filter(a => a.id !== id)), 8000)
-    })
+    }
 
-    return () => { socket.off('new_alert') }
+    socket.on('new_alert', addAlert)
+    socket.on('ip_blocked', (data) => addAlert({
+      severity: 'IP_BLOCKED',
+      type: 'IP BLOCKED',
+      ip: data.ip,
+      message: data.reason || 'Blocked by ' + (data.blockedBy || 'system'),
+    }))
+
+    return () => { socket.off('new_alert'); socket.off('ip_blocked') }
   }, [])
 
   if (alerts.length === 0) return null

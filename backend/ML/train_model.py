@@ -67,11 +67,14 @@ def train_model():
 
     X = np.array([extract_features(log) for log in all_logs])
 
-    model_if = IsolationForest(contamination=0.2, n_estimators=300, random_state=42)
+    model_if = IsolationForest(contamination=0.2, n_estimators=100, random_state=42, n_jobs=-1)
     model_if.fit(X)
 
-    model_svm = OneClassSVM(kernel='rbf', gamma='auto', nu=0.2)
-    model_svm.fit(X)
+    # SVM only on small sample (fast)
+    sample_size = min(2000, len(X))
+    idx = np.random.choice(len(X), sample_size, replace=False)
+    model_svm = OneClassSVM(kernel='rbf', gamma='scale', nu=0.2)
+    model_svm.fit(X[idx])
 
     with open(MODEL_PATH, 'wb') as f:
         pickle.dump({'isolation_forest': model_if, 'svm': model_svm}, f)

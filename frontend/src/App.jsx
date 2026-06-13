@@ -15,6 +15,7 @@ import Morpheus from './pages/Morpheus'
 import HelixNexus from './pages/HelixNexus'
 import Compliance from './pages/Compliance'
 import ThreatIntel from './pages/ThreatIntel'
+import InternalLogs from './pages/InternalLogs'
 import AlertToast from './components/AlertToast'
 
 function ProtectedRoute({ children }) {
@@ -47,6 +48,7 @@ function App() {
         <Route path="/dashboard/helix"           element={<ProtectedRoute><DashboardLayout><HelixNexus /></DashboardLayout></ProtectedRoute>} />
         <Route path="/dashboard/compliance"      element={<ProtectedRoute><DashboardLayout><Compliance /></DashboardLayout></ProtectedRoute>} />
         <Route path="/dashboard/threat-intel"    element={<ProtectedRoute><DashboardLayout><ThreatIntel /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/dashboard/internal-logs"   element={<ProtectedRoute><DashboardLayout><InternalLogs /></DashboardLayout></ProtectedRoute>} />
       </Routes>
     </>
   )

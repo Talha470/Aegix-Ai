@@ -67,11 +67,11 @@ export default function HelixNexus() {
 
   const summary = report?.summary
   const allFindings = report ? [
-    ...report.file_integrity,
-    ...report.suspicious_processes,
-    ...report.network_connections,
-    ...(report.api_self_tests?.filter(t => t.type !== 'API_SELF_TEST') || [])
+    ...(report.file_integrity || []),
+    ...(report.config_issues || []),
+    ...(report.server_checks || []),
   ] : []
+  const codeVulns = report?.code_vulnerabilities || []
 
   return (
     <div style={{ display: 'grid', gap: '20px' }}>
@@ -127,17 +127,22 @@ export default function HelixNexus() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: '0' }}>
-        {['report', 'nexus', 'log'].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
+      <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid rgba(255,255,255,0.07)', flexWrap: 'wrap' }}>
+        {[
+          { id: 'report', label: 'System Checks' },
+          { id: 'vulns', label: `Code Vulns${codeVulns.length ? ` (${codeVulns.length})` : ''}` },
+          { id: 'nexus', label: 'NEXUS Actions' },
+          { id: 'log',   label: 'Heal Log' },
+        ].map(tab => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
             style={{
               padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-              borderBottom: activeTab === tab ? '2px solid #44d17a' : '2px solid transparent',
-              color: activeTab === tab ? '#44d17a' : 'var(--muted)',
-              fontSize: '13px', fontWeight: activeTab === tab ? '600' : '400',
-              textTransform: 'capitalize', transition: 'all 0.2s'
+              borderBottom: activeTab === tab.id ? '2px solid #44d17a' : '2px solid transparent',
+              color: activeTab === tab.id ? '#44d17a' : 'var(--muted)',
+              fontSize: '13px', fontWeight: activeTab === tab.id ? '600' : '400',
+              transition: 'all 0.2s'
             }}>
-            {tab === 'report' ? 'HELIX Report' : tab === 'nexus' ? 'NEXUS Actions' : 'Heal Log'}
+            {tab.label}
           </button>
         ))}
       </div>
@@ -181,6 +186,51 @@ export default function HelixNexus() {
               <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>
                 Scanned at: {report.scan_time ? new Date(report.scan_time).toLocaleString() : '—'}
               </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'vulns' && (
+        <div style={{ display: 'grid', gap: '10px' }}>
+          {codeVulns.length === 0 && (
+            <div style={{ ...cardStyle, textAlign: 'center', color: 'var(--muted)', padding: '40px' }}>
+              {report ? 'No code vulnerabilities found.' : 'Run HELIX Scan first.'}
+            </div>
+          )}
+          {codeVulns.length > 0 && (
+            <div style={{ ...cardStyle, padding: 0, overflow: 'hidden' }}>
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ margin: 0, fontSize: '14px', color: 'var(--text)' }}>Code Vulnerabilities</h3>
+                <span style={{ fontSize: '11px', color: 'var(--muted)' }}>{report?.files_scanned ?? 0} files scanned</span>
+              </div>
+              {codeVulns.map((v, i) => (
+                <div key={i} style={{
+                  padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)',
+                  display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '14px', alignItems: 'start'
+                }}>
+                  <span style={{
+                    padding: '3px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: '700',
+                    background: `${SEV_COLORS[v.severity] || '#888'}18`,
+                    color: SEV_COLORS[v.severity] || '#888', whiteSpace: 'nowrap'
+                  }}>{v.severity}</span>
+                  <div>
+                    <div style={{ fontSize: '13px', color: 'var(--text)', fontWeight: '600', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ color: '#a78bfa', fontSize: '11px', fontFamily: 'monospace' }}>[{v.type}]</span>
+                      {v.label}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#00f0ff', marginTop: '2px', fontFamily: 'monospace' }}>
+                      {v.file}:{v.line}
+                    </div>
+                    {v.snippet && (
+                      <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '4px', fontFamily: 'monospace', background: 'rgba(255,255,255,0.03)', padding: '4px 8px', borderRadius: '6px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                        {v.snippet}
+                      </div>
+                    )}
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '3px' }}>{v.message}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

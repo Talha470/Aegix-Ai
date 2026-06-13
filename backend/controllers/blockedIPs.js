@@ -82,6 +82,14 @@ async function addBlockedIP(req, res) {
     // Best-effort direct UFW (works if container has sudo access)
     runCmd(`sudo ufw deny from ${ip} to any comment "AEGIX-BLOCKED"`)
 
+    // Emit socket alert
+    if (global.aegixIO) {
+      global.aegixIO.to('alerts').emit('ip_blocked', {
+        ip, reason: reason || 'Manual block', source: 'MANUAL',
+        blockedBy: user, ts: new Date().toISOString(),
+      })
+    }
+
     res.json({ success: true, message: `IP ${ip} blocked successfully`, data: blocked })
   } catch (err) {
     if (err.code === 11000) return res.status(409).json({ success: false, message: 'IP already blocked' })
