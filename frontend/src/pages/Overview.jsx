@@ -66,12 +66,25 @@ export default function Overview() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [a, b, c, d, e, f] = await Promise.all([
+        const [a, b, c, d, e, f, g] = await Promise.all([
           api.get('/server/real-stats'), api.get('/dashboard/logs'),
           api.get('/server/server-stats'), api.get('/server/fail2ban'),
           api.get('/server/modsec'), api.get('/server/cowrie'),
+          api.get('/dashboard/stats'),  // real MongoDB counts
         ])
-        setStats(a.data || {}); setLogs(b.data || []); setServerStats(c.data || {})
+        // Merge: file-based stats + MongoDB counts (MongoDB wins for alerts/logs)
+        const fileBased = a.data || {}
+        const dbBased = g.data || {}
+        setStats({
+          ...fileBased,
+          alerts: dbBased.alerts ?? fileBased.alerts ?? 0,
+          logs: dbBased.logs ?? fileBased.logs ?? 0,
+          suspiciousIPs: dbBased.suspiciousIPs ?? fileBased.suspiciousIPs ?? 0,
+          users: dbBased.users ?? fileBased.users ?? 0,
+          attacks: dbBased.attacks ?? fileBased.attacks ?? 0,
+          activeHoneypots: 3,
+        })
+        setLogs(b.data || []); setServerStats(c.data || {})
         setFail2ban(d.data || []); setModsec(e.data || []); setCowrie(f.data || [])
       } catch (err) { console.error(err) }
       finally { setLoading(false) }

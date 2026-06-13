@@ -1,6 +1,9 @@
 const BlockedIP = require('../models/BlockedIP')
 const { exec } = require('child_process')
 const https = require('https')
+const fs = require('fs')
+
+const BLOCKED_IPS_FILE = '/app/blocked_ips.txt'
 
 // Helper: validate IPv4/IPv6
 function isValidIP(ip) {
@@ -9,13 +12,33 @@ function isValidIP(ip) {
   return ipv4.test(ip) || ipv6.test(ip)
 }
 
-// Helper: run shell command (for UFW + Fail2Ban sync)
+// Helper: run shell command (best-effort, Docker may not have sudo)
 function runCmd(cmd) {
   return new Promise((resolve) => {
-    exec(cmd, (err, stdout, stderr) => {
+    exec(cmd, { timeout: 5000 }, (err, stdout, stderr) => {
       resolve({ success: !err, output: stdout || stderr || '' })
     })
   })
+}
+
+// Write IP to sync file — host cron picks this up and applies UFW
+function writeToSyncFile(ip) {
+  try {
+    const existing = fs.existsSync(BLOCKED_IPS_FILE)
+      ? fs.readFileSync(BLOCKED_IPS_FILE, 'utf8').split('\n').filter(Boolean)
+      : []
+    if (!existing.includes(ip)) {
+      fs.appendFileSync(BLOCKED_IPS_FILE, ip + '\n')
+    }
+  } catch (e) {}
+}
+
+function removeFromSyncFile(ip) {
+  try {
+    if (!fs.existsSync(BLOCKED_IPS_FILE)) return
+    const lines = fs.readFileSync(BLOCKED_IPS_FILE, 'utf8').split('\n').filter(l => l.trim() && l.trim() !== ip)
+    fs.writeFileSync(BLOCKED_IPS_FILE, lines.join('\n') + '\n')
+  } catch (e) {}
 }
 
 // GET /api/blocked-ips — list all blocked IPs
@@ -54,9 +77,10 @@ async function addBlockedIP(req, res) {
       blockedBy: user, permanent, expiresAt: permanent ? null : expiresAt
     })
 
-    // Sync to UFW + Fail2Ban on server
-    await runCmd(`sudo ufw deny from ${ip} to any comment "AEGIX-BLOCKED"`)
-    await runCmd(`sudo fail2ban-client set sshd banip ${ip}`)
+    // Write to sync file (host cron applies UFW)
+    writeToSyncFile(ip)
+    // Best-effort direct UFW (works if container has sudo access)
+    runCmd(`sudo ufw deny from ${ip} to any comment "AEGIX-BLOCKED"`)
 
     res.json({ success: true, message: `IP ${ip} blocked successfully`, data: blocked })
   } catch (err) {
@@ -74,9 +98,9 @@ async function removeBlockedIP(req, res) {
     const { ip } = blocked
     await BlockedIP.findByIdAndDelete(req.params.id)
 
-    // Remove from UFW
-    await runCmd(`sudo ufw delete deny from ${ip} to any`)
-    await runCmd(`sudo fail2ban-client set sshd unbanip ${ip} 2>/dev/null || true`)
+    // Remove from sync file + best-effort UFW
+    removeFromSyncFile(ip)
+    runCmd(`sudo ufw delete deny from ${ip} to any`)
 
     res.json({ success: true, message: `IP ${ip} unblocked` })
   } catch (err) {

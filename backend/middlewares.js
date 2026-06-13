@@ -328,7 +328,18 @@ const schema = Joi.object({
       return next();
     }
 
+    // Skip HELIX internal self-tests — don't log localhost probes
+    if (req.headers['x-helix-self-test'] === '1') {
+      return next();
+    }
+
     const ip = getClientIP(req);
+
+    // Skip localhost IPs (::1 / 127.0.0.1) — internal traffic only
+    if (ip === '::1' || ip === '127.0.0.1') {
+      await updateRouteStats(req.originalUrl);
+      return next();
+    }
 
     // Rate limit tracking per IP
     if (!rateLimitForIP[ip]) {
